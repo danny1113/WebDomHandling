@@ -74,12 +74,12 @@ open class WKWebObject: NSObject, ObservableObject, WKNavigationDelegate {
             guard error == nil, let result = result as? String else {
                 if let error = error {
                     print(error)
-                    self.webView(didReceive: error.localizedDescription)
+                    self.webView(webView, didReceive: error.localizedDescription)
                 }
                 return
             }
             
-            self.webView(didFinish: result)
+            self.webView(webView, didFinish: result)
         }
     }
     
@@ -87,7 +87,7 @@ open class WKWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     /// - Note:
     ///     Initially this function won't do anything. You have to override it.
     /// - Parameter evaluateJavaScript: the string value return value from JavaScript
-    open func webView(didFinish evaluateJavaScript: String) {
+    open func webView(_ webView: WKWebView, didFinish evaluateJavaScript: String) {
         
     }
     
@@ -95,7 +95,7 @@ open class WKWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     /// - Note:
     ///     Initially this function won't do anything. You have to override it.
     /// - Parameter javaScriptError: error message.
-    open func webView(didReceive javaScriptError: String) {
+    open func webView(_ webView: WKWebView, didReceive javaScriptError: String) {
         
     }
     
