@@ -24,7 +24,7 @@ open class WKWebObject: NSObject, WKNavigationDelegate {
     /// variable stores the JavaScript source code.
     public var script: String = ""
     
-    public let decoder = JSONDecoder()
+    private let decoder = JSONDecoder()
     
     /// setup the webView.
     public override init() {
@@ -109,6 +109,25 @@ open class WKWebObject: NSObject, WKNavigationDelegate {
     /// - Parameter javaScriptError: error message.
     open func webView(_ webView: WKWebView, didReceive javaScriptError: String) {
         
+    }
+    
+    enum DecodeError: Error {
+        case CantConvertToData
+    }
+    
+    /// Returns a value of the type you specify, decoded from a JSON object.
+    /// - Parameters:
+    ///     - type: The type of the value to decode from the supplied JSON object.
+    ///     - jsonString: The JSON object to decode.
+    /// - Returns: A value of the specified type, if the decoder can parse the data.
+    public func decode<T: Decodable>(as type: T.Type, jsonString: String) throws -> T {
+        guard let data = jsonString.data(using: .utf8) else {
+            throw DecodeError.CantConvertToData
+        }
+        
+        let result = try self.decoder.decode(T.self, from: data)
+        
+        return result
     }
     
     /// Remove cache from HTTPCookieStorage, URLCache, WKWebsiteDataStore
