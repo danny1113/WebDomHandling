@@ -120,9 +120,13 @@ open class WKWebObject: NSObject, ObservableObject, WKNavigationDelegate {
 #if os(iOS)
 
 extension WKWebObject {
-    struct WebView: UIViewRepresentable {
+    public struct WebView: UIViewRepresentable {
         
         let webView: WKWebView
+        
+        public init(webView: WKWebView) {
+            self.webView = webView
+        }
         
         public func makeUIView(context: Context) -> some UIView {
             return webView
