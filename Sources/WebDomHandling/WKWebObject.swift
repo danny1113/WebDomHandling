@@ -70,6 +70,11 @@ open class WKWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     }
     
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        
+        guard !script.isEmpty else {
+            return
+        }
+        
         webView.evaluateJavaScript(script) { result, error in
             guard error == nil, let result = result as? String else {
                 if let error = error {
