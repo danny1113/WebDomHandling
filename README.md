@@ -1,3 +1,3 @@
 # WebDomHandling
 
-A description of this package.
+## A Swift Package for handling JavaScript code between WebKit and Swift.
