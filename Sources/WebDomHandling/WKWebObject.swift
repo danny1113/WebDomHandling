@@ -10,7 +10,14 @@ import SwiftUI
 import WebKit
 
 /// The parent object which defines the fundemental of WebObject.
-open class WKWebObject: NSObject, ObservableObject, WKNavigationDelegate {
+///
+/// - Note:
+///     You have to inherit this class.
+///
+/// This object will setup the `webView` and set its `navigaitonDelegate`.
+///
+/// You can inherit this class and call ``loadJavaScriptString(forResource:)`` to load JavaScript code from `Bundle.main`.
+open class WKWebObject: NSObject, WKNavigationDelegate {
     
     public var webView: WKWebView!
     
