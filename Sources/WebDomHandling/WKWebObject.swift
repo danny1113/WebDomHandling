@@ -83,7 +83,7 @@ open class WKWebObject: NSObject, ObservableObject, WKNavigationDelegate {
         }
     }
     
-    /// Gets called when ``func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!)`` is called.
+    /// Gets called when `func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!)` is called.
     /// - Note:
     ///     Initially this function won't do anything. You have to override it.
     /// - Parameter evaluateJavaScript: the string value return value from JavaScript
