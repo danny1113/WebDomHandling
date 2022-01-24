@@ -11,8 +11,7 @@ import WebKit
 
 /// The parent object which defines the fundemental of WebObject.
 ///
-/// - Note:
-///     You have to inherit this class.
+/// - Note: You have to inherit this class.
 ///
 /// This object will setup the `webView` and set its `navigaitonDelegate`.
 ///
@@ -96,16 +95,14 @@ open class WKWebObject: NSObject, WKNavigationDelegate {
     }
     
     /// Gets called when `func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!)` is called.
-    /// - Note:
-    ///     Initially this function won't do anything. You have to override it.
+    /// - Note: Initially this function won't do anything. You have to override it.
     /// - Parameter evaluateJavaScript: the string value return value from JavaScript
     open func webView(_ webView: WKWebView, didFinish evaluateJavaScript: String) {
         
     }
     
     /// Gets called when `webView.evaluateJavaScript(script)` passed an error.
-    /// - Note:
-    ///     Initially this function won't do anything. You have to override it.
+    /// - Note: Initially this function won't do anything. You have to override it.
     /// - Parameter javaScriptError: the error message.
     open func webView(_ webView: WKWebView, didReceive javaScriptError: String) {
         
