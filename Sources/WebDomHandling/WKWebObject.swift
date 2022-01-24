@@ -5,8 +5,6 @@
 //  Created by 龐達業 on 2021/12/20.
 //
 
-import Foundation
-import SwiftUI
 import WebKit
 
 /// The parent object which defines the fundemental of WebObject.
@@ -18,21 +16,22 @@ import WebKit
 /// You can inherit this class and call ``loadJavaScriptString(forResource:)`` to load JavaScript code from `Bundle.main`.
 open class WKWebObject: NSObject, WKNavigationDelegate {
     
+    /// Environment for JavaScript.
     public var webView: WKWebView!
     
-    /// variable stores the JavaScript source code.
+    /// Variable stores the JavaScript source code.
     public var script: String = ""
     
     private let decoder = JSONDecoder()
     
-    /// setup the webView.
+    /// Setup the webView.
     public override init() {
         super.init()
         
         setupWebView()
     }
     
-    /// Initialize webView and assign its delegate to class.
+    /// Initialize webView and assign its delegate.
     /// ```swift
     /// webView = WKWebView()
     /// webView.navigationDelegate = self
@@ -45,7 +44,7 @@ open class WKWebObject: NSObject, WKNavigationDelegate {
     }
     
     /**
-     Load JavaScript string from `Bundle.main`.
+     Load JavaScript file from `Bundle.main`.
      - Parameter forResource : path of the file (without extension)
      */
     public func loadJavaScriptString(forResource: String) {
@@ -144,49 +143,3 @@ open class WKWebObject: NSObject, WKNavigationDelegate {
         )
     }
 }
-
-#if os(iOS)
-
-extension WKWebObject {
-    public struct WebView: UIViewRepresentable {
-        
-        let webView: WKWebView
-        
-        public init(webView: WKWebView = WKWebView()) {
-            self.webView = webView
-        }
-        
-        public func makeUIView(context: Context) -> some UIView {
-            return webView
-        }
-        
-        public func updateUIView(_ uiView: UIViewType, context: Context) {
-            
-        }
-    }
-}
-
-#endif
-
-#if os(macOS)
-
-extension WKWebObject {
-    public struct WebView: NSViewRepresentable {
-        
-        let webView: WKWebView
-        
-        public init(webView: WKWebView = WKWebView()) {
-            self.webView = webView
-        }
-        
-        public func makeNSView(context: Context) -> some NSView {
-            return webView
-        }
-        
-        public func updateNSView(_ nsView: NSViewType, context: Context) {
-            
-        }
-    }
-}
-
-#endif
