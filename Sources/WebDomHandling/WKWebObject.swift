@@ -152,7 +152,7 @@ extension WKWebObject {
         
         let webView: WKWebView
         
-        public init(webView: WKWebView) {
+        public init(webView: WKWebView = WKWebView()) {
             self.webView = webView
         }
         
@@ -175,7 +175,7 @@ extension WKWebObject {
         
         let webView: WKWebView
         
-        public init(webView: WKWebView) {
+        public init(webView: WKWebView = WKWebView()) {
             self.webView = webView
         }
         
