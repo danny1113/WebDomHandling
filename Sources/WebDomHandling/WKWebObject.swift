@@ -106,7 +106,7 @@ open class WKWebObject: NSObject, WKNavigationDelegate {
     /// Gets called when `webView.evaluateJavaScript(script)` passed an error.
     /// - Note:
     ///     Initially this function won't do anything. You have to override it.
-    /// - Parameter javaScriptError: error message.
+    /// - Parameter javaScriptError: the error message.
     open func webView(_ webView: WKWebView, didReceive javaScriptError: String) {
         
     }
@@ -164,6 +164,29 @@ extension WKWebObject {
         }
         
         public func updateUIView(_ uiView: UIViewType, context: Context) {
+            
+        }
+    }
+}
+
+#endif
+
+#if os(macOS)
+
+extension WKWebObject {
+    public struct WebView: NSViewRepresentable {
+        
+        let webView: WKWebView
+        
+        public init(webView: WKWebView) {
+            self.webView = webView
+        }
+        
+        public func makeNSView(context: Context) -> some NSView {
+            return webView
+        }
+        
+        public func updateNSView(_ nsView: NSViewType, context: Context) {
             
         }
     }
