@@ -14,7 +14,7 @@ import WebKit
 /// This object will setup the `webView` and set its `navigaitonDelegate` by default.
 ///
 /// You can inherit this class and call ``loadJavaScriptString(forResource:)`` to load JavaScript code from `Bundle.main`.
-open class WKWebObject: NSObject, WKNavigationDelegate {
+open class WKWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     
     /// Environment for JavaScript.
     public var webView: WKWebView!
