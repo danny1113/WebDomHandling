@@ -14,7 +14,7 @@ import WebKit
 /// This object will setup the `webView` and set its `navigaitonDelegate`.
 ///
 /// You can inherit this class and call ``loadJavaScriptString(forResource:)`` to load JavaScript code from `Bundle.main`.
-open class WKWebObject: NSObject, WKNavigationDelegate, WKWebObjectDelegate {
+open class WKWebObject: NSObject, WKNavigationDelegate {
     
     /// Environment for JavaScript.
     public var webView: WKWebView!
@@ -108,19 +108,19 @@ open class WKWebObject: NSObject, WKNavigationDelegate, WKWebObjectDelegate {
         }
     }
     
-    /// Gets called when `func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!)` is called.
-    /// - Note: Initially this function won't do anything. You have to override it.
-    /// - Parameter evaluateJavaScript: the string value return value from JavaScript
-    public func webView(_ webView: WKWebView, didFinish evaluateJavaScript: String) {
-        
-    }
-    
-    /// Gets called when `webView.evaluateJavaScript(script)` passed an error.
-    /// - Note: Initially this function won't do anything. You have to override it.
-    /// - Parameter javaScriptError: the error message.
-    public func webView(_ webView: WKWebView, didReceive javaScriptError: String) {
-        
-    }
+//    /// Gets called when `func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!)` is called.
+//    /// - Note: Initially this function won't do anything. You have to override it.
+//    /// - Parameter evaluateJavaScript: the string value return value from JavaScript
+//    public func webView(_ webView: WKWebView, didFinish evaluateJavaScript: String) {
+//
+//    }
+//
+//    /// Gets called when `webView.evaluateJavaScript(script)` passed an error.
+//    /// - Note: Initially this function won't do anything. You have to override it.
+//    /// - Parameter javaScriptError: the error message.
+//    public func webView(_ webView: WKWebView, didReceive javaScriptError: String) {
+//
+//    }
     
     enum DecodeError: Error {
         case CantConvertToData
