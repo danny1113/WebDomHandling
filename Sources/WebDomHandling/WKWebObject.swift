@@ -22,6 +22,9 @@ open class WKWebObject: NSObject, WKNavigationDelegate {
     /// Variable stores the JavaScript source code.
     public var script: String = ""
     
+    // TODO: documentation
+    public var delegate: WKWebObjectDelegate?
+    
     private let decoder = JSONDecoder()
     
     /// Setup the webView.
@@ -95,11 +98,13 @@ open class WKWebObject: NSObject, WKNavigationDelegate {
                 if let error = error {
                     print(error)
                     self.webView(webView, didReceive: error.localizedDescription)
+                    self.delegate?.webView(webView, didReceive: error.localizedDescription)
                 }
                 return
             }
             
             self.webView(webView, didFinish: result)
+            self.delegate?.webView(webView, didFinish: result)
         }
     }
     
@@ -152,4 +157,17 @@ open class WKWebObject: NSObject, WKNavigationDelegate {
             completionHandler: {}
         )
     }
+}
+
+
+public protocol WKWebObjectDelegate {
+    /// Gets called when `func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!)` is called.
+    /// - Note: Initially this function won't do anything. You have to override it.
+    /// - Parameter evaluateJavaScript: the string value return value from JavaScript
+    func webView(_ webView: WKWebView, didFinish evaluateJavaScript: String)
+    
+    /// Gets called when `webView.evaluateJavaScript(script)` passed an error.
+    /// - Note: Initially this function won't do anything. You have to override it.
+    /// - Parameter javaScriptError: the error message.
+    func webView(_ webView: WKWebView, didReceive javaScriptError: String)
 }
