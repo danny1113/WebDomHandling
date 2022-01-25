@@ -8,7 +8,7 @@
 import WebKit
 
 
-class ExampleSubClass: WKWebObject, WKWebObjectDelegate {
+class ExampleSubClass: WDWebObject, WDWebObjectDelegate {
     
     override init() {
         super.init()

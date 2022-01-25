@@ -11,7 +11,7 @@ import WebKit
 
 #if os(iOS)
 
-extension WKWebObject {
+extension WDWebObject {
     public struct WebView: UIViewRepresentable {
         
         let webView: WKWebView
@@ -34,7 +34,7 @@ extension WKWebObject {
 
 #if os(macOS)
 
-extension WKWebObject {
+extension WDWebObject {
     public struct WebView: NSViewRepresentable {
         
         let webView: WKWebView
