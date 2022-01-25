@@ -58,18 +58,28 @@ open class WKWebObject: NSObject, WKNavigationDelegate {
     }
     
     /// Loads the web content referenced by the specified URL request object and navigates to it.
+    /// - Parameter urlString: URL
+    open func load(_ urlString: String) {
+        guard let url = URL(string: urlString) else {
+            return
+        }
+        
+        let request = URLRequest(url: url)
+        
+        webView.load(request)
+    }
+    
+    /// Loads the web content referenced by the specified URL request object and navigates to it.
     /// - Parameters:
     ///     - urlString: URL
     ///     - allHTTPHeaderFields: HTTP Headers
-    open func load(_ urlString: String, _ allHTTPHeaderFields: [String: String]? = nil) {
+    open func load(_ urlString: String, _ allHTTPHeaderFields: [String: String]) {
         guard let url = URL(string: urlString) else {
             return
         }
         
         var request = URLRequest(url: url)
-        if let allHTTPHeaderFields = allHTTPHeaderFields {
-            request.allHTTPHeaderFields = allHTTPHeaderFields
-        }
+        request.allHTTPHeaderFields = allHTTPHeaderFields
         
         webView.load(request)
     }
