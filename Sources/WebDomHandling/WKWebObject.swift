@@ -1,8 +1,8 @@
 //
 //  WKWebObject.swift
-//  THSR
 //
-//  Created by 龐達業 on 2021/12/20.
+//
+//  Created by Danny on 2021/12/20.
 //
 
 import WebKit
