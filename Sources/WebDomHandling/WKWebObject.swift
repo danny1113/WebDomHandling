@@ -7,11 +7,11 @@
 
 import WebKit
 
-/// The parent object which defines the fundemental of WebObject.
+/// The parent object which defines the fundemental elements when handling codes between between JavaScript and Swift.
 ///
 /// - Note: You have to inherit this class.
 ///
-/// This object will setup the `webView` and set its `navigaitonDelegate`.
+/// This object will setup the `webView` and set its `navigaitonDelegate` by default.
 ///
 /// You can inherit this class and call ``loadJavaScriptString(forResource:)`` to load JavaScript code from `Bundle.main`.
 open class WKWebObject: NSObject, WKNavigationDelegate {
@@ -32,6 +32,14 @@ open class WKWebObject: NSObject, WKNavigationDelegate {
         super.init()
         
         setupWebView()
+    }
+    
+    /// Setup the webView and load JavaScript code from `Bundle.main`.
+    public init(javaScriptString forResource: String) {
+        super.init()
+        
+        setupWebView()
+        loadJavaScriptString(forResource: forResource)
     }
     
     /// Initialize webView and assign its delegate.
