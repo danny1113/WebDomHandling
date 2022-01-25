@@ -87,6 +87,11 @@ open class WKWebObject: NSObject, WKNavigationDelegate {
         webView.load(request)
     }
     
+    /// when webView finished navigation and the JavaScript code isn't empty, webView will evaluate the JavaScript code.
+    ///
+    /// After webView evaluated the JavaScript code,
+    /// - If `error` is `nil`, and `result` can be typecast as `String`, the delegate function ``WKWebObjectDelegate/webView(_:didFinish:)`` will be called.
+    /// - If `error` is not `nil`, the delegate function ``WKWebObjectDelegate/webView(_:didReceive:)`` will be called.
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         
         guard !script.isEmpty else {
@@ -104,6 +109,9 @@ open class WKWebObject: NSObject, WKNavigationDelegate {
             self.delegate?.webView(webView, didFinish: result)
         }
     }
+}
+
+extension WKWebObject {
     
     enum DecodeError: Error {
         case CantConvertToData
