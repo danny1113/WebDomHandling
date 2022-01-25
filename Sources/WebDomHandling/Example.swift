@@ -5,35 +5,52 @@
 //  Created by Danny on 2022/1/25.
 //
 
-import WebKit
+import Foundation
 
-
-class ExampleSubClass: WDWebObject, WDWebObjectDelegate {
-    
-    override init() {
-        super.init()
-        
-        // Set delegate to self.
-        delegate = self
-    }
-    
-    // Protocol 實作.
-    func webView(_ webView: WKWebView, didFinishEvaluateJavaScript result: String) {
-        
-    }
-    
-    func webView(_ webView: WKWebView, didFailEvaluateJavaScript error: String) {
-        
-    }
-    
-    
-    /*
-    func webView(_ webView: WKWebView, didFinish evaluateJavaScript: String) {
-        
-    }
-    
-    func webView(_ webView: WKWebView, didReceive javaScriptError: String) {
-        
-    }
-    */
+protocol Delegate {
+    func message()
 }
+
+class Example {
+    var delegate: Delegate?
+    
+    var classA = ExampleA()
+    var classB = ExampleB()
+    
+    func setDelegate() {
+        delegate = classA
+        delegate?.message()
+        // print "class A"
+        
+        delegate = classB
+        delegate?.message()
+        // print "class B"
+    }
+}
+
+class ExampleA: Delegate {
+    
+    func message() {
+        print("class A")
+    }
+}
+
+class ExampleB: Delegate {
+    
+    func message() {
+        print("class B")
+    }
+}
+
+
+
+
+/*
+func webView(_ webView: WKWebView, didFinish evaluateJavaScript: String) {
+    
+}
+
+func webView(_ webView: WKWebView, didReceive javaScriptError: String) {
+    
+}
+*/
