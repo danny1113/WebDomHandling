@@ -85,7 +85,7 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     
     /// Loads the web content referenced by the specified URL request object and navigates to it.
     /// - Parameter urlString: URL
-    public func load(_ urlString: String) {
+    open func load(_ urlString: String) {
         guard let url = URL(string: urlString) else {
             return
         }
@@ -101,7 +101,7 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     /// - Parameters:
     ///     - urlString: URL
     ///     - allHTTPHeaderFields: HTTP Headers
-    public func load(_ urlString: String, _ allHTTPHeaderFields: [String: String]) {
+    open func load(_ urlString: String, _ allHTTPHeaderFields: [String: String]) {
         guard let url = URL(string: urlString) else {
             return
         }
