@@ -128,19 +128,23 @@ open class WKWebObject: NSObject, ObservableObject, WKNavigationDelegate {
         webView.evaluateJavaScript(script) { result, error in
             
             if let error = error {
-                self.delegate?.webView(webView, didReceive: error.localizedDescription)
+                self.delegate?.webView(webView, didFailEvaluateJavaScript: error.localizedDescription)
                 return
             }
             
             guard let result = result as? String else {
-                self.delegate?.webView(webView, didReceive: "Can't convert to String.")
+                self.delegate?.webView(webView, didFailEvaluateJavaScript: "Can't convert to String.")
                 return
             }
             
-            self.delegate?.webView(webView, didFinish: result)
+            self.delegate?.webView(webView, didFinishEvaluateJavaScript: result)
         }
         
         print("didFinish navigation.")
+    }
+    
+    public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        
     }
 }
 
@@ -187,9 +191,9 @@ extension WKWebObject {
 public protocol WKWebObjectDelegate {
     /// Gets called when `func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!)` is called.
     /// - Parameter evaluateJavaScript: the string value return value from JavaScript
-    func webView(_ webView: WKWebView, didFinish evaluateJavaScript: String)
+    func webView(_ webView: WKWebView, didFinishEvaluateJavaScript result: String)
     
     /// Gets called when `webView.evaluateJavaScript(script)` passed an error.
     /// - Parameter javaScriptError: the error message.
-    func webView(_ webView: WKWebView, didReceive javaScriptError: String)
+    func webView(_ webView: WKWebView, didFailEvaluateJavaScript error: String)
 }

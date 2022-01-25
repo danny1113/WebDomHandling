@@ -18,6 +18,16 @@ class ExampleSubClass: WKWebObject, WKWebObjectDelegate {
     }
     
     // Protocol 實作.
+    func webView(_ webView: WKWebView, didFinishEvaluateJavaScript result: String) {
+        
+    }
+    
+    func webView(_ webView: WKWebView, didFailEvaluateJavaScript error: String) {
+        
+    }
+    
+    
+    /*
     func webView(_ webView: WKWebView, didFinish evaluateJavaScript: String) {
         
     }
@@ -25,4 +35,5 @@ class ExampleSubClass: WKWebObject, WKWebObjectDelegate {
     func webView(_ webView: WKWebView, didReceive javaScriptError: String) {
         
     }
+    */
 }
