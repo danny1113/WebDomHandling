@@ -96,31 +96,14 @@ open class WKWebObject: NSObject, WKNavigationDelegate {
         webView.evaluateJavaScript(script) { result, error in
             guard error == nil, let result = result as? String else {
                 if let error = error {
-                    print(error)
-//                    self.webView(webView, didReceive: error.localizedDescription)
                     self.delegate?.webView(webView, didReceive: error.localizedDescription)
                 }
                 return
             }
             
-//            self.webView(webView, didFinish: result)
             self.delegate?.webView(webView, didFinish: result)
         }
     }
-    
-//    /// Gets called when `func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!)` is called.
-//    /// - Note: Initially this function won't do anything. You have to override it.
-//    /// - Parameter evaluateJavaScript: the string value return value from JavaScript
-//    public func webView(_ webView: WKWebView, didFinish evaluateJavaScript: String) {
-//
-//    }
-//
-//    /// Gets called when `webView.evaluateJavaScript(script)` passed an error.
-//    /// - Note: Initially this function won't do anything. You have to override it.
-//    /// - Parameter javaScriptError: the error message.
-//    public func webView(_ webView: WKWebView, didReceive javaScriptError: String) {
-//
-//    }
     
     enum DecodeError: Error {
         case CantConvertToData
@@ -162,12 +145,10 @@ open class WKWebObject: NSObject, WKNavigationDelegate {
 
 public protocol WKWebObjectDelegate {
     /// Gets called when `func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!)` is called.
-    /// - Note: Initially this function won't do anything. You have to override it.
     /// - Parameter evaluateJavaScript: the string value return value from JavaScript
     func webView(_ webView: WKWebView, didFinish evaluateJavaScript: String)
     
     /// Gets called when `webView.evaluateJavaScript(script)` passed an error.
-    /// - Note: Initially this function won't do anything. You have to override it.
     /// - Parameter javaScriptError: the error message.
     func webView(_ webView: WKWebView, didReceive javaScriptError: String)
 }
