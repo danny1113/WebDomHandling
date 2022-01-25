@@ -31,7 +31,6 @@ open class WKWebObject: NSObject, WKNavigationDelegate, WKWebObjectDelegate {
     public override init() {
         super.init()
         
-        delegate = self
         setupWebView()
     }
     
