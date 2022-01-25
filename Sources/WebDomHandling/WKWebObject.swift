@@ -22,9 +22,10 @@ open class WKWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     /// Variable stores the JavaScript source code.
     public var script: String = ""
     
-    // TODO: documentation
+    /// delegate for handling JavaScript evaluate result or error.
     public var delegate: WKWebObjectDelegate?
     
+    /// decoder for decode JSON object.
     private let decoder = JSONDecoder()
     
     /// Setup the webView.
@@ -35,12 +36,26 @@ open class WKWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     }
     
     /// Setup the webView and load JavaScript code from `Bundle.main`.
+    /// - Parameter forResource: path of the file (without extension)
     public init(javaScriptString forResource: String) {
         super.init()
         
         setupWebView()
         loadJavaScriptString(forResource: forResource)
     }
+    
+    /// Setup the webView, load JavaScript code from `Bundle.main` and load the specified URL.
+    /// - Parameters:
+    ///   - forResource: path of the file (without extension)
+    ///   - url: website's URL
+    public init(javaScriptString forResource: String, url: String) {
+        super.init()
+        
+        setupWebView()
+        loadJavaScriptString(forResource: forResource)
+        load(url)
+    }
+    
     
     /// Initialize webView and assign its delegate.
     /// ```swift
