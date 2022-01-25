@@ -36,7 +36,7 @@ open class WKWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     }
     
     /// Setup the webView and load JavaScript code from `Bundle.main`.
-    /// - Parameter forResource: path of the file (without extension)
+    /// - Parameter forResource: path of the file (without extension).
     public init(javaScriptString forResource: String) {
         super.init()
         
@@ -46,7 +46,7 @@ open class WKWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     
     /// Setup the webView, load JavaScript code from `Bundle.main` and load the specified URL.
     /// - Parameters:
-    ///   - forResource: path of the file (without extension)
+    ///   - forResource: path of the file (without extension).
     ///   - url: website's URL
     public init(javaScriptString forResource: String, url: String) {
         super.init()
@@ -71,7 +71,7 @@ open class WKWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     
     /**
      Load JavaScript file from `Bundle.main`.
-     - Parameter forResource : path of the file (without extension)
+     - Parameter forResource : path of the file (without extension).
      */
     public func loadJavaScriptString(forResource: String) {
         do {
@@ -85,21 +85,23 @@ open class WKWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     
     /// Loads the web content referenced by the specified URL request object and navigates to it.
     /// - Parameter urlString: URL
-    open func load(_ urlString: String) {
+    public func load(_ urlString: String) {
         guard let url = URL(string: urlString) else {
             return
         }
         
         let request = URLRequest(url: url)
         
-        webView.load(request)
+        DispatchQueue.main.async {
+            self.webView.load(request)
+        }
     }
     
     /// Loads the web content referenced by the specified URL request object and navigates to it.
     /// - Parameters:
     ///     - urlString: URL
     ///     - allHTTPHeaderFields: HTTP Headers
-    open func load(_ urlString: String, _ allHTTPHeaderFields: [String: String]) {
+    public func load(_ urlString: String, _ allHTTPHeaderFields: [String: String]) {
         guard let url = URL(string: urlString) else {
             return
         }
@@ -107,10 +109,12 @@ open class WKWebObject: NSObject, ObservableObject, WKNavigationDelegate {
         var request = URLRequest(url: url)
         request.allHTTPHeaderFields = allHTTPHeaderFields
         
-        webView.load(request)
+        DispatchQueue.main.async {
+            self.webView.load(request)
+        }
     }
     
-    /// when webView finished navigation and the JavaScript code isn't empty, webView will evaluate the JavaScript code.
+    /// When webView finished navigation and the JavaScript code isn't empty, webView will evaluate the JavaScript code.
     ///
     /// After webView evaluated the JavaScript code,
     /// - If `error` is `nil`, and `result` can be typecast as `String`, the delegate function ``WKWebObjectDelegate/webView(_:didFinish:)`` will be called.
@@ -122,15 +126,21 @@ open class WKWebObject: NSObject, ObservableObject, WKNavigationDelegate {
         }
         
         webView.evaluateJavaScript(script) { result, error in
-            guard error == nil, let result = result as? String else {
-                if let error = error {
-                    self.delegate?.webView(webView, didReceive: error.localizedDescription)
-                }
+            
+            if let error = error {
+                self.delegate?.webView(webView, didReceive: error.localizedDescription)
+                return
+            }
+            
+            guard let result = result as? String else {
+                self.delegate?.webView(webView, didReceive: "Can't convert to String.")
                 return
             }
             
             self.delegate?.webView(webView, didFinish: result)
         }
+        
+        print("didFinish navigation.")
     }
 }
 
