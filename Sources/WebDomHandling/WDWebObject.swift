@@ -171,7 +171,7 @@ extension WDWebObject {
     ///     - type: The type of the value to decode from the supplied JSON object.
     ///     - jsonString: The JSON object to decode.
     /// - Returns: A value of the specified type, if the decoder can parse the data.
-    public func decode<T: Decodable>(as type: T.Type = T.self, jsonString: String) throws -> T {
+    public func decode<T: Decodable>(_ type: T.Type = T.self, jsonString: String) throws -> T {
         guard let data = jsonString.data(using: .utf8) else {
             throw DecodeError.CantConvertToData
         }

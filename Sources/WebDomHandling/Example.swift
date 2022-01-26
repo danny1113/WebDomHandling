@@ -6,26 +6,18 @@
 //
 
 import WebKit
+import SwiftUI
 
 
-class ExampleWebObject: WDWebObject, WDWebObjectDelegate {
+class ExampleWebObject: WDWebObject {
     
     override init() {
         super.init()
         
-        // Set delegate to self.
-        delegate = self
+        loadJavaScriptString(forResource: "script")
+        load("https://url/to/your/websites")
+
     }
-    
-    // Protocol implementation.
-    func webView(_ webView: WKWebView, didFinishEvaluateJavaScript result: String) {
-        
-    }
-    
-    func webView(_ webView: WKWebView, didFailEvaluateJavaScript error: String) {
-        
-    }
-    
     
     /*
     func webView(_ webView: WKWebView, didFinish evaluateJavaScript: String) {
@@ -36,4 +28,40 @@ class ExampleWebObject: WDWebObject, WDWebObjectDelegate {
         
     }
     */
+}
+
+struct ExampleView: View, WDWebObjectDelegate {
+    
+    var webObject = ExampleWebObject()
+    @State private var data = [String]()
+    
+    var body: some View {
+        List(data, id: \.self) { item in
+            Text(item)
+        }
+        .onAppear(perform: setDelegate)
+    }
+    
+    private func setDelegate() {
+        if webObject.delegate is Self {
+            print("delegate is already set.")
+        } else {
+            webObject.delegate = self
+        }
+    }
+    
+    // Protocol implementation.
+    func webView(_ webView: WKWebView, didFinishEvaluateJavaScript result: String) {
+        
+        do {
+            let data: [String] = try webObject.decode(jsonString: result)
+            self.data = data
+        } catch {
+            print(error)
+        }
+    }
+    
+    func webView(_ webView: WKWebView, didFailEvaluateJavaScript error: String) {
+        
+    }
 }
