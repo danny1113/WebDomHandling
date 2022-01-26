@@ -9,7 +9,7 @@ import WebKit
 
 /// The parent object which defines the fundemental elements when handling codes between between JavaScript and Swift.
 ///
-/// - Note: You have to inherit this class.
+/// - Note: You have to set its delegate.
 ///
 /// This object will setup the `webView` and set its `navigaitonDelegate` by default.
 ///
@@ -17,7 +17,7 @@ import WebKit
 open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     
     /// Environment for JavaScript.
-    public var webView: WKWebView!
+    public private(set) var webView: WKWebView!
     
     /// Variable stores the JavaScript source code.
     public var script: String = ""
@@ -126,21 +126,21 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
         }
         
         webView.evaluateJavaScript(script) { result, error in
-            
+            // An error occured.
             if let error = error {
                 self.delegate?.webView(webView, didFailEvaluateJavaScript: error.localizedDescription)
                 return
             }
-            
+            // result can be typecast as String
             guard let result = result as? String else {
                 self.delegate?.webView(webView, didFailEvaluateJavaScript: "Can't convert to String.\nIf you are returning a JSON from JavaScript, please use JSON.stringify() before data return to Swift.")
                 return
             }
-            
+            // did finished evaluate JavaScript code.
             self.delegate?.webView(webView, didFinishEvaluateJavaScript: result)
         }
         
-        print("didFinish navigation.")
+        // print("didFinish navigation.")
     }
 }
 
