@@ -117,8 +117,8 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     /// When webView finished navigation and the JavaScript code isn't empty, webView will evaluate the JavaScript code.
     ///
     /// After webView evaluated the JavaScript code,
-    /// - If `error` is `nil`, and `result` can be typecast as `String`, the delegate function ``WKWebObjectDelegate/webView(_:didFinish:)`` will be called.
-    /// - If `error` is not `nil`, the delegate function ``WKWebObjectDelegate/webView(_:didReceive:)`` will be called.
+    /// - If `error` is `nil`, and `result` can be typecast as `String`, the delegate function ``WDWebObjectDelegate/webView(_:didFinishEvaluateJavaScript:)`` will be called.
+    /// - If `error` is not `nil`, the delegate function ``WDWebObjectDelegate/webView(_:didFailEvaluateJavaScript:)`` will be called.
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         
         guard !script.isEmpty else {
@@ -141,10 +141,6 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
         }
         
         print("didFinish navigation.")
-    }
-    
-    public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        
     }
 }
 
