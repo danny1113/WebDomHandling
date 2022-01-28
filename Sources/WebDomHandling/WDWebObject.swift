@@ -7,6 +7,7 @@
 
 import WebKit
 
+
 /// The parent object which defines the fundemental elements when handling codes between between JavaScript and Swift.
 ///
 /// - Note: You have to set its delegate.
@@ -16,7 +17,7 @@ import WebKit
 /// You can inherit this class and call ``loadJavaScriptString(forResource:)`` to load JavaScript code from `Bundle.main`.
 open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     
-    /// Environment for JavaScript.
+    /// Environment for JavaScript code to run in.
     public private(set) var webView: WKWebView!
     
     /// Variable stores the JavaScript source code.
