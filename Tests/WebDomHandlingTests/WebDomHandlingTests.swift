@@ -14,16 +14,15 @@ final class WebDomHandlingTests: XCTestCase {
         // results.
         
         expectation = expectation(description: "Load webView")
-        webObject.script = "function main() { return 'Hello, World!' } main();"
+        webObject.script = "function main() { return document.querySelector('#test').innerHTML } main();"
         webObject.delegate = self
-        webObject.load("https://www.google.com")
+        webObject.loadHTMLString("<h1 id=\"test\">Hello, World!</h1>")
         
         waitForExpectations(timeout: 10)
         
         let result = try XCTUnwrap(result)
         
-//        XCTAssertEqual(result, "Hello, World!")
-        XCTAssertTrue(result.starts(with: "Hello"))
+        XCTAssertEqual(result, "Hello, World!")
     }
 }
 
