@@ -9,7 +9,7 @@ import WebKit
 import SwiftUI
 
 
-class ExampleWebObject: WDWebObject {
+final class ExampleWebObject: WDWebObject {
     
     override init() {
         super.init()
@@ -32,7 +32,7 @@ class ExampleWebObject: WDWebObject {
 
 struct ExampleView: View, WDWebObjectDelegate {
     
-    var webObject = ExampleWebObject()
+    @StateObject var webObject = ExampleWebObject()
     @State private var data = [String]()
     
     var body: some View {
