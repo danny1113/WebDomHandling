@@ -8,6 +8,7 @@
 import WebKit
 
 
+
 /// The parent object which defines the fundemental elements when handling codes between between JavaScript and Swift.
 ///
 /// - Note: You have to set its delegate.
@@ -26,8 +27,14 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     /// delegate for handling JavaScript evaluate result or error.
     public var delegate: WDWebObjectDelegate?
     
+    
+    /// When webView did finish navigation but no JavaScript code provided, this tag will be set to `true`.
+    /// When JavaScript code loaded, webView will evaluate the code.
+    private var shouldEvaluate = false
+    
     /// decoder for decode JSON object.
     private let decoder = JSONDecoder()
+    
     
     /// Setup the webView.
     public override init() {
@@ -78,14 +85,36 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
         do {
             if let url = Bundle.main.url(forResource: forResource, withExtension: "js") {
                 script = try String(contentsOf: url)
+                
+                if shouldEvaluate {
+                    webView.evaluateJavaScript(script, completionHandler: evaluateResult)
+                }
             }
         } catch {
             print(error)
         }
     }
     
+    
+    /// Load JavaScript code referenced by the specified URL.
+    /// - Parameter url: URL.
+    public func loadJavaScriptString(url: URL) {
+        URLSession.shared.dataTask(with: url) { data, _, _ in
+            guard let data = data,
+                  let string = String(data: data, encoding: .utf8) else {
+                return
+            }
+            
+            self.script = string
+            
+            if self.shouldEvaluate {
+                self.webView.evaluateJavaScript(string, completionHandler: self.evaluateResult)
+            }
+        }
+    }
+    
     /// Loads the web content referenced by the specified URL request object and navigates to it.
-    /// - Parameter urlString: URL
+    /// - Parameter urlString: URL.
     open func load(_ urlString: String) {
         guard let url = URL(string: urlString) else {
             return
@@ -115,6 +144,17 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
         }
     }
     
+    /// Loads the contents of the specified HTML string and navigates to it.
+    ///
+    /// Use this method to navigate to a webpage that you loaded or created yourself. For example, you might use this method to load HTML content that your app generates programmatically.
+    ///
+    /// - Parameters:
+    ///   - string: The string to use as the contents of the webpage.
+    ///   - baseURL: The base URL to use when resolving relative URLs within the HTML string.
+    public func loadHTMLString(_ string: String, baseURL: URL? = nil) {
+        webView.loadHTMLString(string, baseURL: baseURL)
+    }
+    
     /// When webView finished navigation and the JavaScript code isn't empty, webView will evaluate the JavaScript code.
     ///
     /// After webView evaluated the JavaScript code,
@@ -123,25 +163,30 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         
         guard !script.isEmpty else {
+            shouldEvaluate = true
             return
         }
         
-        webView.evaluateJavaScript(script) { result, error in
-            // An error occured.
-            if let error = error {
-                self.delegate?.webView(webView, didFailEvaluateJavaScript: error.localizedDescription)
-                return
-            }
-            // result can be typecast as String
-            guard let result = result as? String else {
-                self.delegate?.webView(webView, didFailEvaluateJavaScript: "Can't convert to String.\nIf you are returning a JSON from JavaScript, please use JSON.stringify() before data return to Swift.")
-                return
-            }
-            // did finished evaluate JavaScript code.
-            self.delegate?.webView(webView, didFinishEvaluateJavaScript: result)
+        webView.evaluateJavaScript(script, completionHandler: evaluateResult)
+    }
+    
+    private func evaluateResult(_ result: Any?, _ error: Error?) {
+        if shouldEvaluate {
+            shouldEvaluate = false
         }
         
-        // print("didFinish navigation.")
+        // An error occured.
+        if let error = error {
+            self.delegate?.webView(webView, didFailEvaluateJavaScript: error.localizedDescription)
+            return
+        }
+        // result can be typecast as String
+        guard let result = result as? String else {
+            self.delegate?.webView(webView, didFailEvaluateJavaScript: "Can't convert to String.\nIf you are returning a JSON from JavaScript, please use JSON.stringify() before data return to Swift.")
+            return
+        }
+        // did finished evaluate JavaScript code.
+        self.delegate?.webView(webView, didFinishEvaluateJavaScript: result)
     }
 }
 
