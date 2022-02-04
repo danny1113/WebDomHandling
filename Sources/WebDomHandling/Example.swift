@@ -64,4 +64,5 @@ struct ExampleView: View, WDWebObjectDelegate {
     func webView(_ webView: WKWebView, didFailEvaluateJavaScript error: String) {
         
     }
+    
 }
