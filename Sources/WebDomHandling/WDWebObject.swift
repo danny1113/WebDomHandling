@@ -87,7 +87,7 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
                 script = try String(contentsOf: url)
                 
                 if shouldEvaluate {
-                    webView.evaluateJavaScript(script, completionHandler: evaluateResult)
+                    webView.evaluateJavaScript(script, completionHandler: evaluateResultHandler)
                 }
             }
         } catch {
@@ -108,7 +108,7 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
             self.script = string
             
             if self.shouldEvaluate {
-                self.webView.evaluateJavaScript(string, completionHandler: self.evaluateResult)
+                self.webView.evaluateJavaScript(string, completionHandler: self.evaluateResultHandler)
             }
         }
     }
@@ -167,10 +167,10 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
             return
         }
         
-        webView.evaluateJavaScript(script, completionHandler: evaluateResult)
+        webView.evaluateJavaScript(script, completionHandler: evaluateResultHandler)
     }
     
-    private func evaluateResult(_ result: Any?, _ error: Error?) {
+    private func evaluateResultHandler(_ result: Any?, _ error: Error?) {
         if shouldEvaluate {
             shouldEvaluate = false
         }
