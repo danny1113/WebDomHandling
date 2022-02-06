@@ -10,8 +10,15 @@ import WebKit
 
 extension WDWebObject {
     
-    enum DecodeError: Error {
+    enum DecodeError: Error, LocalizedError {
         case CantConvertToData
+        
+        public var errorDescription: String? {
+            switch self {
+            case .CantConvertToData:
+                return NSLocalizedString("An error occured when convert String to Data.", comment: "Can't convert to data.")
+            }
+        }
     }
     
     /// Returns a value of the type you specify, decoded from a JSON object.
