@@ -45,7 +45,7 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     
     /// Setup the webView and load JavaScript code from `Bundle.main`.
     /// - Parameter forResource: path of the file (without extension).
-    public init(javaScriptString forResource: String) {
+    public init(forResource: String) {
         super.init()
         
         setupWebView()
@@ -55,13 +55,27 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     /// Setup the webView, load JavaScript code from `Bundle.main` and load the specified URL.
     /// - Parameters:
     ///   - forResource: path of the file (without extension).
-    ///   - url: website's URL
-    public init(javaScriptString forResource: String, url: String) {
+    ///   - url: website's URL.
+    public init(forResource: String, url: String) {
         super.init()
         
         setupWebView()
         loadJavaScriptString(forResource: forResource)
         load(url)
+    }
+    
+    /// Setup the webView, pass javaScript code and load the specified URL.
+    /// - Parameters:
+    ///   - javaScriptString: the JavaScript code.
+    ///   - url: website's URL.
+    public init(javaScriptString: String, url: String = "") {
+        super.init()
+        
+        setupWebView()
+        script = javaScriptString
+        if !url.isEmpty {
+            load(url)
+        }
     }
     
     
