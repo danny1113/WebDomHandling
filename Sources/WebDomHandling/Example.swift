@@ -16,18 +16,7 @@ final class ExampleWebObject: WDWebObject {
         
         loadJavaScriptString(forResource: "script")
         load("https://url/to/your/websites")
-
     }
-    
-    /*
-    func webView(_ webView: WKWebView, didFinish evaluateJavaScript: String) {
-        
-    }
-    
-    func webView(_ webView: WKWebView, didReceive javaScriptError: String) {
-        
-    }
-    */
 }
 
 struct ExampleView: View, WDWebObjectDelegate {
@@ -52,7 +41,6 @@ struct ExampleView: View, WDWebObjectDelegate {
     
     // Protocol implementation.
     func webView(_ webView: WKWebView, didFinishEvaluateJavaScript result: String) {
-        
         do {
             let data: [String] = try webObject.decode(jsonString: result)
             self.data = data
@@ -62,7 +50,7 @@ struct ExampleView: View, WDWebObjectDelegate {
     }
     
     func webView(_ webView: WKWebView, didFailEvaluateJavaScript error: String) {
-        
+        print(error)
     }
     
 }
