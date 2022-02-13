@@ -191,6 +191,7 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
         
         // An error occured.
         if let error = error {
+            print(error)
             self.delegate?.webView(webView, didFailEvaluateJavaScript: error.localizedDescription)
             return
         }
