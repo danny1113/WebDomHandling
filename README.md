@@ -1,14 +1,12 @@
 
 # WebDomHandling
 
-> ## A Swift Package for handling JavaScript code between WebKit and Swift implemented by WebKit.
+WebDomHandling is a Swift Package for handling JavaScript code between WebKit and Swift implemented by WebKit.
 
 
 # Quick Start
 
-> **Importtant**
-> 
-> You have to set delegate to able to handle the result and error return from `WKWebView`,
+> **Important:** You have to set delegate to able to handle the result and error return from `WKWebView`.
 
 You can initialize the webObject for JavaScript environment by calling:
 
@@ -27,13 +25,12 @@ let webObject = WDWebObject(
     url: "https://url/to/your/websites")
 ```
 
-> **forResource doesn't need js extension name.**
+> **Note:** `forResource` **doesn't need extension name.**
 > You just need to type your filename.
 >
-> Example: `WDWebObject(forResource: "script")`
->
+> **Example:** `WDWebObject(forResource: "script")`
 
-You can also inherit it with the following code:
+You can also create a subclass with the following code:
 
 ```swift
 class ExampleWebObject: WDWebObject, WDWebObjectDelegate {
@@ -60,9 +57,9 @@ class ExampleWebObject: WDWebObject, WDWebObjectDelegate {
 
 ## WDWebObjectDelegate
 
-it has 2 functions:
+`WDWebObjectDelegate` is a protocol for handling result and error return from the WKWebView’s JavaScript environment. And it has 2 functions:
 
-- `func webView(_ webView: WKWebView, didFinishEvaluateJavaScript result: String)` for handling result return from WKWebView.
-- `func webView(_ webView: WKWebView, didFailEvaluateJavaScript error: String)` for handling error return from WKWebView.
+- `func webView(_ webView: WKWebView, didFinishEvaluateJavaScript result: String)` for handling result return from `WKWebView`.
+- `func webView(_ webView: WKWebView, didFailEvaluateJavaScript error: String)` for handling error return from `WKWebView`.
 
-> For example of delegate implementation, check [Example.swift](Sources/WebDomHandling/Example.swift), this example shows how to implement delegation in SwiftUI.
+> **Note:** For example of delegate implementation, check [Example.swift](Sources/WebDomHandling/Example.swift), this example shows how to implement delegation in SwiftUI.
