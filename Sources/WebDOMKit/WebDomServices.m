@@ -128,6 +128,7 @@
     if (str == nil) {
         NSError *e = [NSError errorWithDomain:NSCocoaErrorDomain code:-1 userInfo:nil];
         [self.delegate webView:webView didFailEvaluateJavaScript:e];
+        return;
     }
     // did finished evaluate JavaScript code.
     [self.delegate webView:webView didFinishEvaluateJavaScript:str];
