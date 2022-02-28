@@ -13,6 +13,7 @@ let package = Package(
         .library(
             name: "WebDomHandling",
             targets: ["WebDomHandling"]),
+        .library(name: "WebDOMKit", targets: ["WebDOMKit"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -27,5 +28,8 @@ let package = Package(
         .testTarget(
             name: "WebDomHandlingTests",
             dependencies: ["WebDomHandling"]),
+        
+        .target(name: "WebDOMKit", dependencies: []),
+        .testTarget(name: "WebDOMKitTests", dependencies: ["WebDOMKit"]),
     ]
 )
