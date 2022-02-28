@@ -125,13 +125,14 @@
     }
     // result can be typecast as String
     NSString *str = result;
-    if (str == nil) {
-        NSError *e = [NSError errorWithDomain:NSCocoaErrorDomain code:-1 userInfo:nil];
-        [self.delegate webView:webView didFailEvaluateJavaScript:e];
+    if (str) {
+        // did finished evaluate JavaScript code.
+        [self.delegate webView:webView didFinishEvaluateJavaScript:str];
         return;
     }
-    // did finished evaluate JavaScript code.
-    [self.delegate webView:webView didFinishEvaluateJavaScript:str];
+    
+    NSError *e = [NSError errorWithDomain:NSCocoaErrorDomain code:-1 userInfo:nil];
+    [self.delegate webView:webView didFailEvaluateJavaScript:e];
 }
 
 @end
