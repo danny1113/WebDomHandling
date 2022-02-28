@@ -27,7 +27,7 @@ let package = Package(
             dependencies: []),
         .testTarget(
             name: "WebDomHandlingTests",
-            dependencies: ["WebDomHandling"]),
+            dependencies: ["WebDomHandling", "WebDOMKit"]),
         
         .target(name: "WebDOMKit", dependencies: []),
         .testTarget(name: "WebDOMKitTests", dependencies: ["WebDOMKit"]),

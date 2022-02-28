@@ -43,10 +43,10 @@
     // Use XCTAssert and related functions to verify your tests produce the correct results.
     
     expectation = [self expectationWithDescription:@"perform JS code"];
-    [service loadHTMLString:@"<h1 id=\"test\">Hello, World!</h1>" baseURL:nil];
+    [service loadHTMLString:@"<h1 id=\"test\">Hello, World</h1>" baseURL:nil];
     
     [self waitForExpectations:@[expectation] timeout:5];
-    XCTAssertEqualObjects(result, @"Hello, World!");
+    XCTAssertEqualObjects(result, @"Hello, World");
 }
 
 - (void)testPerformanceExample {

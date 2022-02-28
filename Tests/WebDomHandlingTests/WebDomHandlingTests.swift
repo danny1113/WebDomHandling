@@ -2,21 +2,22 @@
 import XCTest
 import WebKit
 @testable import WebDomHandling
+@testable import WebDOMKit
 
 
 final class WebDomHandlingTests: XCTestCase {
     
     var result: String?
     var expectation: XCTestExpectation?
-    var webObject: WDWebObject!
+    var service: WebDomServices!
     
     
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
         
-        webObject = WDWebObject()
-        webObject.script = "function main() { return document.querySelector('#test').innerHTML } main();"
-        webObject.delegate = self
+        service = WebDomServices()
+        service.script = "function main() { return document.querySelector('#test').innerHTML } main();"
+        service.delegate = self
     }
     
     override func tearDown() {
@@ -29,13 +30,13 @@ final class WebDomHandlingTests: XCTestCase {
         // results.
         
         expectation = expectation(description: "perform JS code")
-        webObject.loadHTMLString("<h1 id=\"test\">Hello, World!</h1>")
+        service.loadHTMLString("<h1 id=\"test\">Hello, World</h1>", baseURL: nil)
         
         waitForExpectations(timeout: 5)
         
         let result = try XCTUnwrap(result)
         
-        XCTAssertEqual(result, "Hello, World!")
+        XCTAssertEqual(result, "Hello, World")
     }
     
     func testPerformanceExample() throws {
@@ -43,7 +44,7 @@ final class WebDomHandlingTests: XCTestCase {
         measure {
             for _ in 0..<500 {
                 expectation = expectation(description: "perform JS code")
-                webObject.loadHTMLString("<h1 id=\"test\">Hello, World!</h1>")
+                service.loadHTMLString("<h1 id=\"test\">Hello, World!</h1>", baseURL: nil)
                 
                 waitForExpectations(timeout: 5)
             }
@@ -51,15 +52,14 @@ final class WebDomHandlingTests: XCTestCase {
     }
 }
 
-extension WebDomHandlingTests: WDWebObjectDelegate {
+
+extension WebDomHandlingTests: WebDomServicesDelegate {
     func webView(_ webView: WKWebView, didFinishEvaluateJavaScript result: String) {
         self.result = result
         expectation?.fulfill()
     }
     
-    func webView(_ webView: WKWebView, didFailEvaluateJavaScript error: String) {
-        self.result = error
-        expectation?.fulfill()
-        expectation = nil
+    func webView(_ webView: WKWebView, didFailEvaluateJavaScript error: Error) {
+        print(error.localizedDescription)
     }
 }
