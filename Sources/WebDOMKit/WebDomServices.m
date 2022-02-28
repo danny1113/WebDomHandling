@@ -127,7 +127,7 @@
         // did finished evaluate JavaScript code.
         [self.delegate webView:webView didFinishEvaluateJavaScript:result];
     } else {
-        NSError *e = [NSError errorWithDomain:NSCocoaErrorDomain code:-1 userInfo:nil];
+        NSError *e = [NSError errorWithDomain:NSCocoaErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: @"Can't convert to NSString.\nIf you are returning a JSON from JavaScript, please use JSON.stringify() before data return to Objective-C."}];
         [self.delegate webView:webView didFailEvaluateJavaScript:e];
     }
 }
