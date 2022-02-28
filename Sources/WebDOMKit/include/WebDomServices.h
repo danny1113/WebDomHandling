@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setupWebView;
 
+- (void)loadJavaScriptStringForResource:(NSString *)resource;
 - (void)loadURLString:(NSString *)urlString;
 - (void)loadHTMLString:(NSString *)htmlString baseURL:(NSURL * _Nullable)base;
 
