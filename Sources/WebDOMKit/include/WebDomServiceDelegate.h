@@ -1,5 +1,5 @@
 //
-//  WebDomServicesDelegate.h
+//  WebDomServiceDelegate.h
 //  
 //
 //  Created by Danny on 2022/2/28.
@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol WebDomServicesDelegate <NSObject>
+@protocol WebDomServiceDelegate <NSObject>
 
 @required
 - (void)webView:(WKWebView *)webView didFinishEvaluateJavaScript:(NSString *)result;

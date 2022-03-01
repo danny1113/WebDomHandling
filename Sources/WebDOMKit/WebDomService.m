@@ -1,14 +1,14 @@
 //
-//  WebDomServices.m
+//  WebDomService.m
 //  
 //
 //  Created by Danny on 2022/2/28.
 //
 
-#import "WebDomServices.h"
+#import "WebDomService.h"
 
 
-@interface WebDomServices ()
+@interface WebDomService ()
 
 @property (nonatomic, copy) WKWebView *webView; //redefined as readwrite
 
@@ -17,7 +17,7 @@
 @end
 
 
-@implementation WebDomServices
+@implementation WebDomService
 
 @synthesize webView;
 @synthesize script;
@@ -38,25 +38,6 @@
     self = [self init];
     if (self) {
         [self loadJavaScriptStringForResource:resource];
-    }
-    
-    return self;
-}
-
-- (instancetype)initWithResource:(NSString *)resource url:(NSString *)url {
-    self = [self initWithResource:resource];
-    if (self) {
-        [self loadURLString:url];
-    }
-    
-    return self;
-}
-
-- (instancetype)initWithJavaScriptString:(NSString *)script url:(NSString *)url {
-    self = [self init];
-    if (self) {
-        self.script = script;
-        [self loadURLString:url];
     }
     
     return self;
@@ -88,7 +69,7 @@
     
 }
 
-- (void)loadURLString:(NSString *)urlString {
+- (void)load:(NSString *)urlString {
     NSURL *url = [NSURL URLWithString:urlString];
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     
@@ -103,8 +84,10 @@
 
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
-    if ([script isEqualToString:@""]) {
+    if (script == nil || [script isEqualToString:@""]) {
         shouldReload = YES;
+        NSError *e = [NSError errorWithDomain:NSCocoaErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: @"No JavaScript code provided for evaluate."}];
+        [self.delegate webView:webView didFailEvaluateJavaScript:e];
         return;
     }
     
