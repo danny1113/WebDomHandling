@@ -10,7 +10,7 @@
 
 @interface WebDomService ()
 
-@property (nonatomic, copy) WKWebView *webView; //redefined as readwrite
+@property (nonatomic, copy) WKWebView *webView; // redefined as readwrite
 
 @property (nonatomic) BOOL shouldReload;
 
@@ -100,14 +100,12 @@
 - (void)evaluateCompletionHandler:(id)result error:(NSError *)error {
     if (shouldReload)
         shouldReload = NO;
-    // An error occured.
+    
     if (error) {
-        NSLog(@"%@", error);
         [self.delegate webView:webView didFailEvaluateJavaScript:error];
         return;
     }
     if (result && [result isKindOfClass:[NSString class]]) {
-        // did finished evaluate JavaScript code.
         [self.delegate webView:webView didFinishEvaluateJavaScript:result];
     } else {
         NSError *e = [NSError errorWithDomain:NSCocoaErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: @"Can't convert to NSString.\nIf you are returning a JSON from JavaScript, please use JSON.stringify() before data return to Objective-C."}];
