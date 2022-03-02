@@ -6,6 +6,7 @@
 //
 
 import WebKit
+import Combine
 
 
 
@@ -35,6 +36,8 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     /// decoder for decode JSON object.
     let decoder = JSONDecoder()
     
+    private lazy var finishEvaluateSubject = PassthroughSubject<(String?, Error?), Never>()
+    public lazy var finishEvaluatePublisher = finishEvaluateSubject.eraseToAnyPublisher()
     
     /// Setup the webView.
     public override init() {
@@ -192,15 +195,19 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
         // An error occured.
         if let error = error {
             print(error)
-            self.delegate?.webView(webView, didFailEvaluateJavaScript: error.localizedDescription)
+            self.finishEvaluateSubject.send((nil, error))
+            self.delegate?.webView(webView, didFailEvaluateJavaScript: error)
             return
         }
         // result can be typecast as String
         guard let result = result as? String else {
-            self.delegate?.webView(webView, didFailEvaluateJavaScript: "Can't convert to String.\nIf you are returning a JSON from JavaScript, please use JSON.stringify() before data return to Swift.")
+            let error = NSError(domain: "WKWebView", code: -1, userInfo: [NSLocalizedDescriptionKey: "Can't convert to String.\nIf you are returning a JSON from JavaScript, please use JSON.stringify() before data return to Swift."])
+            self.finishEvaluateSubject.send((nil, error))
+            self.delegate?.webView(webView, didFailEvaluateJavaScript: error)
             return
         }
         // did finished evaluate JavaScript code.
+        self.finishEvaluateSubject.send((result, nil))
         self.delegate?.webView(webView, didFinishEvaluateJavaScript: result)
     }
 }

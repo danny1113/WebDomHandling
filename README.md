@@ -30,6 +30,22 @@ let webObject = WDWebObject(
 >
 > **Example:** `WDWebObject(forResource: "script")`
 
+You can use `finishEvaluatePublisher` or use [`WDWebObjectDelegate`](#WDWebObjectDelegate) to receive value and error return from JavaScript:
+
+```swift
+cancellable = service.finishEvaluatePublisher
+    .sink { (result, error) in
+        if let error = error {
+            print(error)
+            return
+        }
+        
+        if let result = result {
+            self.result = result
+        }
+    }
+```
+
 You can also create a subclass with the following code:
 
 ```swift

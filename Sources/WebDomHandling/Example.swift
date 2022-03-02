@@ -7,6 +7,7 @@
 
 import WebKit
 import SwiftUI
+import Combine
 
 
 final class ExampleWebObject: WDWebObject {
@@ -23,14 +24,33 @@ struct ExampleView: View, WDWebObjectDelegate {
     
     @StateObject var webObject = ExampleWebObject()
     @State private var data = [String]()
+    @State private var cancellable: AnyCancellable?
     
     var body: some View {
         List(data, id: \.self) { item in
             Text(item)
         }
-        .onAppear(perform: setDelegate)
+        .onAppear(perform: connect)
     }
     
+    // use Combine framework to receive data
+    private func connect() {
+        cancellable = webObject.finishEvaluatePublisher
+            .compactMap { (result, _) -> Data? in
+                if let result = result {
+                    return result.data(using: .utf8)
+                }
+                return nil
+            }
+            .decode(type: [String].self, decoder: JSONDecoder())
+            .replaceError(with: [])
+            .sink { result in
+                self.data = result
+                print("result: \(result)")
+            }
+    }
+    
+    // Use delegate to receive data
     private func setDelegate() {
         if webObject.delegate is Self {
             print("delegate is already set.")
@@ -49,7 +69,7 @@ struct ExampleView: View, WDWebObjectDelegate {
         }
     }
     
-    func webView(_ webView: WKWebView, didFailEvaluateJavaScript error: String) {
+    func webView(_ webView: WKWebView, didFailEvaluateJavaScript error: Error) {
         print(error)
     }
     
