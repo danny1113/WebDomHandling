@@ -21,6 +21,7 @@
 
 @synthesize webView;
 @synthesize script;
+@synthesize bundle;
 @synthesize shouldReload;
 
 
@@ -51,7 +52,10 @@
 }
 
 - (void)loadJavaScriptStringForResource:(NSString *)resource {
-    NSURL *url = [[NSBundle mainBundle] URLForResource:resource withExtension:@"js"];
+    if (bundle == nil)
+        bundle = [NSBundle mainBundle];
+    
+    NSURL *url = [bundle URLForResource:resource withExtension:@"js"];
     if (url == nil)
         return;
     
@@ -70,7 +74,8 @@
 }
 
 - (void)load:(NSString *)urlString {
-    NSURL *url = [NSURL URLWithString:urlString];
+    NSString *encoded = [urlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    NSURL *url = [NSURL URLWithString:encoded];
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     
     dispatch_async(dispatch_get_main_queue(), ^{

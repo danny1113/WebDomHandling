@@ -14,10 +14,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface WebDomService: NSObject <WKNavigationDelegate>
 
-@property (nonatomic, readonly, copy, nonnull) WKWebView *webView;
+@property (nonatomic, copy, readonly, nonnull) WKWebView *webView;
 @property (nonatomic, weak, nullable) id<WebDomServiceDelegate> delegate;
 
-@property (nonatomic) NSString *script;
+@property (nonatomic, strong) NSString *script;
+
+@property (nonatomic, strong) NSBundle *bundle;
 
 
 // initializer
