@@ -22,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSBundle *bundle;
 
 
-// initializer
 - (instancetype)init;
 - (instancetype)initWithResource:(NSString *)resource;
 
@@ -32,7 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)load:(NSString *)urlString;
 - (void)loadHTMLString:(NSString *)htmlString baseURL:(NSURL * _Nullable)base;
 
-- (void)evaluateCompletionHandler:(id _Nullable)result error:(NSError * _Nullable)error;
 
 @end
 

@@ -11,6 +11,17 @@
 #import "WebDomService.h"
 
 
+#define HTMLString @"<h1 id=\"test\">Hello, World</h1>"
+
+#define javaScriptReturnNSString @"function main() { return document.querySelector('#test').innerHTML } main();"
+
+#define javaScriptReturnInvaildValue @"function main() { return true } main();"
+
+#define javaScriptReturnHTMLBody @"function main() { return document.documentElement.outerHTML } main();"
+
+#define PERFORMANCE_TEST_COUNT 100
+
+
 @interface WebDOMKitTests : XCTestCase <WebDomServiceDelegate>
 
 @property (nonatomic) XCTestExpectation *expectation;
@@ -37,8 +48,8 @@
 
 - (void)testWithReturnNSString {
     expectation = [self expectationWithDescription:@"testWithReturnNSString"];
-    [service setScript:@"function main() { return document.querySelector('#test').innerHTML } main();"];
-    [service loadHTMLString:@"<h1 id=\"test\">Hello, World</h1>" baseURL:nil];
+    [service setScript:javaScriptReturnNSString];
+    [service loadHTMLString:HTMLString baseURL:nil];
     
     [self waitForExpectations:@[expectation] timeout:1];
     XCTAssertEqualObjects(result, @"Hello, World");
@@ -46,27 +57,38 @@
 
 - (void)testWithReturnInvaildValue {
     expectation = [self expectationWithDescription:@"testWithReturnInvaildValue"];
-    [service setScript:@"function main() { return true } main();"];
-    [service loadHTMLString:@"<h1 id=\"test\">Hello, World</h1>" baseURL:nil];
+    [service setScript:javaScriptReturnInvaildValue];
+    [service loadHTMLString:HTMLString baseURL:nil];
     
     [self waitForExpectations:@[expectation] timeout:1];
 }
 
+- (void)testRetainCycle {
+    expectation = [self expectationWithDescription:@"testRetainCycle"];
+    [service setScript:javaScriptReturnInvaildValue];
+    [service loadHTMLString:HTMLString baseURL:nil];
+    
+    [self waitForExpectations:@[expectation] timeout:1];
+    
+    service = nil;
+    XCTAssertNil(service);
+}
+
 - (void)testWithRemoteURL {
     expectation = [self expectationWithDescription:@"testWithRemoteURL"];
-    [service setScript:@"function main() { return document.documentElement.outerHTML } main();"];
+    [service setScript:javaScriptReturnHTMLBody];
     [service load:@"https://www.google.com"];
     
     [self waitForExpectations:@[expectation] timeout:10];
 }
 
 - (void)testPerformanceExample {
-    [service setScript:@"function main() { return document.querySelector('#test').innerHTML } main();"];
+    [service setScript:javaScriptReturnNSString];
     
     [self measureBlock:^{
-        for (int i=0; i<10; i++) {
+        for (int i=0; i<PERFORMANCE_TEST_COUNT; i++) {
             expectation = [self expectationWithDescription:@"testPerformanceExample"];
-            [service loadHTMLString:@"<h1 id=\"test\">Hello, World!</h1>" baseURL:nil];
+            [service loadHTMLString:HTMLString baseURL:nil];
             
             [self waitForExpectations:@[expectation] timeout:1];
         }

@@ -7,6 +7,8 @@
 
 #import "WebDomService.h"
 
+#define ERROR_MESSAGE @"Can't convert to NSString.\nIf you are returning a JSON from JavaScript, please use JSON.stringify() before data return to Objective-C."
+
 
 @interface WebDomService ()
 
@@ -52,19 +54,17 @@
 }
 
 - (void)loadJavaScriptStringForResource:(NSString *)resource {
-    if (bundle == nil)
+    if (!bundle)
         bundle = [NSBundle mainBundle];
     
     NSURL *url = [bundle URLForResource:resource withExtension:@"js"];
-    if (url == nil)
+    if (!url)
         return;
     
     NSError *e;
     script = [[NSString alloc] initWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&e];
-    if (e)
-        return;
     
-    if (shouldReload) {
+    if (shouldReload && !e) {
         [webView evaluateJavaScript:script
                   completionHandler:^(id _Nullable result, NSError * _Nullable error) {
             [self evaluateCompletionHandler:result error:error];
@@ -89,7 +89,7 @@
 
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
-    if (script == nil || [script isEqualToString:@""]) {
+    if (!script || [script isEqualToString:@""]) {
         shouldReload = YES;
         NSError *e = [NSError errorWithDomain:NSCocoaErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: @"No JavaScript code provided for evaluate."}];
         [self.delegate webView:webView didFailEvaluateJavaScript:e];
@@ -113,9 +113,11 @@
     if (result && [result isKindOfClass:[NSString class]]) {
         [self.delegate webView:webView didFinishEvaluateJavaScript:result];
     } else {
-        NSError *e = [NSError errorWithDomain:NSCocoaErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: @"Can't convert to NSString.\nIf you are returning a JSON from JavaScript, please use JSON.stringify() before data return to Objective-C."}];
+        NSError *e = [NSError errorWithDomain:NSCocoaErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: ERROR_MESSAGE}];
         [self.delegate webView:webView didFailEvaluateJavaScript:e];
     }
 }
+
+
 
 @end

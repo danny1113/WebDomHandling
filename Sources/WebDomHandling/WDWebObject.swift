@@ -37,6 +37,8 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     let decoder = JSONDecoder()
     
     private lazy var finishEvaluateSubject = PassthroughSubject<(String?, Error?), Never>()
+    
+    /// Publish result or error when webView finished evaluate JavaScript.
     public lazy var finishEvaluatePublisher = finishEvaluateSubject.eraseToAnyPublisher()
     
     /// Setup the webView.

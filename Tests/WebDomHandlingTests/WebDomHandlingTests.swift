@@ -6,6 +6,17 @@ import Combine
 @testable import WebDOMKit
 
 
+let HTMLString = "<h1 id=\"test\">Hello, World</h1>"
+
+let jsReturnString = "function main() { return document.querySelector('#test').innerHTML } main();"
+
+let jsReturnInvaildValue = "function main() { return true } main();"
+
+let jsReturnHTMLBody = "function main() { return document.documentElement.outerHTML } main();"
+
+let PERFORMANCE_TEST_COUNT = 100
+
+
 final class WebDOMKitTests: XCTestCase {
     
     var result: String?
@@ -24,8 +35,8 @@ final class WebDOMKitTests: XCTestCase {
     
     func testWithReturnString() throws {
         expectation = expectation(description: "testWithReturnString")
-        service.script = "function main() { return document.querySelector('#test').innerHTML } main();"
-        service.loadHTMLString("<h1 id=\"test\">Hello, World</h1>", baseURL: nil)
+        service.script = jsReturnString
+        service.loadHTMLString(HTMLString, baseURL: nil)
         
         waitForExpectations(timeout: 1)
         
@@ -36,19 +47,30 @@ final class WebDOMKitTests: XCTestCase {
     
     func testWithReturnInvaildValue() throws {
         expectation = expectation(description: "testWithReturnInvaildValue")
-        service.script = "function main() { return true } main();"
-        service.loadHTMLString("<h1 id=\"test\">Hello, World</h1>", baseURL: nil)
+        service.script = jsReturnInvaildValue
+        service.loadHTMLString(HTMLString, baseURL: nil)
         
         waitForExpectations(timeout: 1)
     }
     
+    func testRetainCycle() throws {
+        expectation = expectation(description: "testRetainCycle")
+        service.script = jsReturnString
+        service.delegate = self
+        service.loadHTMLString(HTMLString, baseURL: nil)
+        
+        waitForExpectations(timeout: 1)
+        service = nil
+        XCTAssertNil(service)
+    }
+    
     func testPerformanceExample() throws {
-        service.script = "function main() { return document.querySelector('#test').innerHTML } main();"
+        service.script = jsReturnString
         
         measure {
-            for _ in 0..<10 {
+            for _ in 0..<PERFORMANCE_TEST_COUNT {
                 expectation = expectation(description: "testPerformanceExample")
-                service.loadHTMLString("<h1 id=\"test\">Hello, World!</h1>", baseURL: nil)
+                service.loadHTMLString(HTMLString, baseURL: nil)
                 
                 waitForExpectations(timeout: 1)
             }
@@ -90,8 +112,8 @@ final class WebDomHandlingTests: XCTestCase {
     func testWithReturnString() throws {
         expectation = expectation(description: "testWithReturnString")
         service.delegate = self
-        service.script = "function main() { return document.querySelector('#test').innerHTML } main();"
-        service.loadHTMLString("<h1 id=\"test\">Hello, World</h1>", baseURL: nil)
+        service.script = jsReturnString
+        service.loadHTMLString(HTMLString, baseURL: nil)
         
         waitForExpectations(timeout: 1)
         
@@ -103,14 +125,26 @@ final class WebDomHandlingTests: XCTestCase {
     func testWithReturnInvaildValue() throws {
         expectation = expectation(description: "testWithReturnInvaildValue")
         service.delegate = self
-        service.script = "function main() { return true } main();"
-        service.loadHTMLString("<h1 id=\"test\">Hello, World</h1>", baseURL: nil)
+        service.script = jsReturnInvaildValue
+        service.loadHTMLString(HTMLString, baseURL: nil)
         
         waitForExpectations(timeout: 1)
     }
     
+    func testRetainCycle() throws {
+        expectation = expectation(description: "testRetainCycle")
+        service.script = jsReturnString
+        cancellable = service.finishEvaluatePublisher
+            .sink(receiveValue: receiveValue)
+        service.loadHTMLString(HTMLString, baseURL: nil)
+        
+        waitForExpectations(timeout: 1)
+        service = nil
+        XCTAssertNil(service)
+    }
+    
     func testPerformanceWithCombine() throws {
-        service.script = "function main() { return document.querySelector('#test').innerHTML } main();"
+        service.script = jsReturnString
         cancellable = service.finishEvaluatePublisher
             .sink(receiveValue: receiveValue)
         
@@ -119,16 +153,16 @@ final class WebDomHandlingTests: XCTestCase {
     
     func testPerformanceWithDelegate() throws {
         service.delegate = self
-        service.script = "function main() { return document.querySelector('#test').innerHTML } main();"
+        service.script = jsReturnString
         
         measure(measureBlock)
     }
     
     
     private func measureBlock() {
-        for _ in 0..<10 {
+        for _ in 0..<PERFORMANCE_TEST_COUNT {
             expectation = expectation(description: "testPerformanceExample")
-            service.loadHTMLString("<h1 id=\"test\">Hello, World!</h1>", baseURL: nil)
+            service.loadHTMLString(HTMLString, baseURL: nil)
             
             waitForExpectations(timeout: 1)
         }
