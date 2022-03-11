@@ -19,7 +19,7 @@
 
 #define javaScriptReturnHTMLBody @"function main() { return document.documentElement.outerHTML } main();"
 
-#define PERFORMANCE_TEST_COUNT 100
+#define PERFORMANCE_TEST_COUNT 10
 
 
 @interface WebDOMKitTests : XCTestCase <WebDomServiceDelegate>
@@ -51,7 +51,7 @@
     [service setScript:javaScriptReturnNSString];
     [service loadHTMLString:HTMLString baseURL:nil];
     
-    [self waitForExpectations:@[expectation] timeout:1];
+    [self waitForExpectations:@[expectation] timeout:3];
     XCTAssertEqualObjects(result, @"Hello, World");
 }
 
@@ -60,7 +60,7 @@
     [service setScript:javaScriptReturnInvaildValue];
     [service loadHTMLString:HTMLString baseURL:nil];
     
-    [self waitForExpectations:@[expectation] timeout:1];
+    [self waitForExpectations:@[expectation] timeout:3];
 }
 
 - (void)testRetainCycle {
@@ -68,7 +68,7 @@
     [service setScript:javaScriptReturnInvaildValue];
     [service loadHTMLString:HTMLString baseURL:nil];
     
-    [self waitForExpectations:@[expectation] timeout:1];
+    [self waitForExpectations:@[expectation] timeout:3];
     
     service = nil;
     XCTAssertNil(service);
@@ -90,7 +90,7 @@
             expectation = [self expectationWithDescription:@"testPerformanceExample"];
             [service loadHTMLString:HTMLString baseURL:nil];
             
-            [self waitForExpectations:@[expectation] timeout:1];
+            [self waitForExpectations:@[expectation] timeout:3];
         }
     }];
 }

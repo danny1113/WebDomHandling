@@ -14,7 +14,7 @@ let jsReturnInvaildValue = "function main() { return true } main();"
 
 let jsReturnHTMLBody = "function main() { return document.documentElement.outerHTML } main();"
 
-let PERFORMANCE_TEST_COUNT = 100
+let PERFORMANCE_TEST_COUNT = 10
 
 
 final class WebDOMKitTests: XCTestCase {
@@ -38,7 +38,7 @@ final class WebDOMKitTests: XCTestCase {
         service.script = jsReturnString
         service.loadHTMLString(HTMLString, baseURL: nil)
         
-        waitForExpectations(timeout: 1)
+        waitForExpectations(timeout: 3)
         
         let result = try XCTUnwrap(result)
 
@@ -50,7 +50,7 @@ final class WebDOMKitTests: XCTestCase {
         service.script = jsReturnInvaildValue
         service.loadHTMLString(HTMLString, baseURL: nil)
         
-        waitForExpectations(timeout: 1)
+        waitForExpectations(timeout: 3)
     }
     
     func testRetainCycle() throws {
@@ -59,7 +59,7 @@ final class WebDOMKitTests: XCTestCase {
         service.delegate = self
         service.loadHTMLString(HTMLString, baseURL: nil)
         
-        waitForExpectations(timeout: 1)
+        waitForExpectations(timeout: 3)
         service = nil
         XCTAssertNil(service)
     }
@@ -72,7 +72,7 @@ final class WebDOMKitTests: XCTestCase {
                 expectation = expectation(description: "testPerformanceExample")
                 service.loadHTMLString(HTMLString, baseURL: nil)
                 
-                waitForExpectations(timeout: 1)
+                waitForExpectations(timeout: 3)
             }
         }
     }
@@ -115,7 +115,7 @@ final class WebDomHandlingTests: XCTestCase {
         service.script = jsReturnString
         service.loadHTMLString(HTMLString, baseURL: nil)
         
-        waitForExpectations(timeout: 1)
+        waitForExpectations(timeout: 3)
         
         let result = try XCTUnwrap(result)
 
@@ -128,7 +128,7 @@ final class WebDomHandlingTests: XCTestCase {
         service.script = jsReturnInvaildValue
         service.loadHTMLString(HTMLString, baseURL: nil)
         
-        waitForExpectations(timeout: 1)
+        waitForExpectations(timeout: 3)
     }
     
     func testRetainCycle() throws {
@@ -138,7 +138,7 @@ final class WebDomHandlingTests: XCTestCase {
             .sink(receiveValue: receiveValue)
         service.loadHTMLString(HTMLString, baseURL: nil)
         
-        waitForExpectations(timeout: 1)
+        waitForExpectations(timeout: 3)
         service = nil
         XCTAssertNil(service)
     }
@@ -164,7 +164,7 @@ final class WebDomHandlingTests: XCTestCase {
             expectation = expectation(description: "testPerformanceExample")
             service.loadHTMLString(HTMLString, baseURL: nil)
             
-            waitForExpectations(timeout: 1)
+            waitForExpectations(timeout: 3)
         }
     }
     
