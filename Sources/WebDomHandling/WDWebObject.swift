@@ -16,7 +16,7 @@ import Combine
 ///
 /// This object will setup the `webView` and set its `navigaitonDelegate` by default.
 ///
-/// You can inherit this class and call ``loadJavaScriptString(forResource:)`` to load JavaScript code from `Bundle.main`.
+/// You can inherit this class and call ``loadJavaScriptString(forResource:)`` to load JavaScript code from Bundle.
 open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     
     /// Environment for JavaScript code to run in.
@@ -28,6 +28,7 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     /// delegate for handling JavaScript evaluate result or error.
     public var delegate: WDWebObjectDelegate?
     
+    public var bundle: Bundle!
     
     /// When webView did finish navigation but no JavaScript code provided, this tag will be set to `true`.
     /// When JavaScript code loaded, webView will evaluate the code.
@@ -48,23 +49,21 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
         setupWebView()
     }
     
-    /// Setup the webView and load JavaScript code from `Bundle.main`.
+    /// Setup the webView and load JavaScript code from Bundle.
     /// - Parameter forResource: path of the file (without extension).
-    public init(forResource: String) {
-        super.init()
+    public convenience init(forResource: String) {
+        self.init()
         
-        setupWebView()
         loadJavaScriptString(forResource: forResource)
     }
     
-    /// Setup the webView, load JavaScript code from `Bundle.main` and load the specified URL.
+    /// Setup the webView, load JavaScript code from Bundle and load the specified URL.
     /// - Parameters:
     ///   - forResource: path of the file (without extension).
     ///   - url: website's URL.
-    public init(forResource: String, url: String) {
-        super.init()
+    public convenience init(forResource: String, url: String) {
+        self.init()
         
-        setupWebView()
         loadJavaScriptString(forResource: forResource)
         load(url)
     }
@@ -73,12 +72,11 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     /// - Parameters:
     ///   - javaScriptString: the JavaScript code.
     ///   - url: website's URL.
-    public init(javaScriptString: String, url: String = "") {
-        super.init()
+    public convenience init(javaScriptString: String, url: String? = nil) {
+        self.init()
         
-        setupWebView()
         script = javaScriptString
-        if !url.isEmpty {
+        if let url = url {
             load(url)
         }
     }
@@ -97,16 +95,21 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     }
     
     /**
-     Load JavaScript file from `Bundle.main`.
+     Load JavaScript file from Bundle
      - Parameter forResource : path of the file (without extension).
+     - Note: The default Bundle is `Bundle.main`.
      */
     public func loadJavaScriptString(forResource: String) {
+        if bundle == nil {
+            bundle = Bundle.main
+        }
+        
         do {
-            if let url = Bundle.main.url(forResource: forResource, withExtension: "js") {
+            if let url = bundle.url(forResource: forResource, withExtension: "js") {
                 script = try String(contentsOf: url)
                 
                 if shouldEvaluate {
-                    webView.evaluateJavaScript(script, completionHandler: evaluateResultHandler)
+                    evaluateJavaScript()
                 }
             }
         } catch {
@@ -120,14 +123,14 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     public func loadJavaScriptString(url: URL) {
         URLSession.shared.dataTask(with: url) { data, _, _ in
             guard let data = data,
-                  let string = String(data: data, encoding: .utf8) else {
+                  let script = String(data: data, encoding: .utf8) else {
                 return
             }
             
-            self.script = string
+            self.script = script
             
             if self.shouldEvaluate {
-                self.webView.evaluateJavaScript(string, completionHandler: self.evaluateResultHandler)
+                self.evaluateJavaScript()
             }
         }
     }
@@ -186,30 +189,28 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
             return
         }
         
-        webView.evaluateJavaScript(script, completionHandler: evaluateResultHandler)
+        evaluateJavaScript()
     }
     
-    private func evaluateResultHandler(_ result: Any?, _ error: Error?) {
-        if shouldEvaluate {
-            shouldEvaluate = false
+    private func evaluateJavaScript() {
+        Task {
+            do {
+                let result = try await webView.evaluateJavaScript(script)
+                shouldEvaluate = false
+                if let result = result as? String {
+                    finishEvaluateSubject.send((result, nil))
+                    delegate?.webView(webView, didFinishEvaluateJavaScript: result)
+                } else {
+                    let error = NSError(domain: "WKWebView", code: -1, userInfo: [NSLocalizedDescriptionKey: "Can't convert to String.\nIf you are returning a JSON from JavaScript, please use JSON.stringify() before data return to Swift."])
+                    finishEvaluateSubject.send((nil, error))
+                    delegate?.webView(webView, didFailEvaluateJavaScript: error)
+                }
+            } catch {
+                print(error)
+                finishEvaluateSubject.send((nil, error))
+                delegate?.webView(webView, didFailEvaluateJavaScript: error)
+            }
         }
-        
-        // An error occured.
-        if let error = error {
-            print(error)
-            self.finishEvaluateSubject.send((nil, error))
-            self.delegate?.webView(webView, didFailEvaluateJavaScript: error)
-            return
-        }
-        // result can be typecast as String
-        guard let result = result as? String else {
-            let error = NSError(domain: "WKWebView", code: -1, userInfo: [NSLocalizedDescriptionKey: "Can't convert to String.\nIf you are returning a JSON from JavaScript, please use JSON.stringify() before data return to Swift."])
-            self.finishEvaluateSubject.send((nil, error))
-            self.delegate?.webView(webView, didFailEvaluateJavaScript: error)
-            return
-        }
-        // did finished evaluate JavaScript code.
-        self.finishEvaluateSubject.send((result, nil))
-        self.delegate?.webView(webView, didFinishEvaluateJavaScript: result)
     }
+    
 }
