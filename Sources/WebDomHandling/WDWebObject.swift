@@ -109,7 +109,9 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
                 script = try String(contentsOf: url)
                 
                 if shouldEvaluate {
-                    evaluateJavaScript()
+                    DispatchQueue.main.async {
+                        self.evaluateJavaScript()
+                    }
                 }
             }
         } catch {
@@ -130,7 +132,9 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
             self.script = script
             
             if self.shouldEvaluate {
-                self.evaluateJavaScript()
+                DispatchQueue.main.async {
+                    self.evaluateJavaScript()
+                }
             }
         }
     }
@@ -189,7 +193,9 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
             return
         }
         
-        evaluateJavaScript()
+        DispatchQueue.main.async {
+            self.evaluateJavaScript()
+        }
     }
     
     private func evaluateJavaScript() {
