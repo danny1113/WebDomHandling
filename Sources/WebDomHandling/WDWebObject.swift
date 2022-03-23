@@ -109,8 +109,8 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
                 script = try String(contentsOf: url)
                 
                 if shouldEvaluate {
-                    DispatchQueue.main.async {
-                        self.evaluateJavaScript()
+                    Task {
+                        await evaluateJavaScript()
                     }
                 }
             }
@@ -132,8 +132,8 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
             self.script = script
             
             if self.shouldEvaluate {
-                DispatchQueue.main.async {
-                    self.evaluateJavaScript()
+                Task {
+                    await self.evaluateJavaScript()
                 }
             }
         }
@@ -193,29 +193,27 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
             return
         }
         
-        DispatchQueue.main.async {
-            self.evaluateJavaScript()
+        Task {
+            await evaluateJavaScript()
         }
     }
     
-    private func evaluateJavaScript() {
-        Task {
-            do {
-                let result = try await webView.evaluateJavaScript(script)
-                shouldEvaluate = false
-                if let result = result as? String {
-                    finishEvaluateSubject.send((result, nil))
-                    delegate?.webView(webView, didFinishEvaluateJavaScript: result)
-                } else {
-                    let error = NSError(domain: "WKWebView", code: -1, userInfo: [NSLocalizedDescriptionKey: "Can't convert to String.\nIf you are returning a JSON from JavaScript, please use JSON.stringify() before data return to Swift."])
-                    finishEvaluateSubject.send((nil, error))
-                    delegate?.webView(webView, didFailEvaluateJavaScript: error)
-                }
-            } catch {
-                print(error)
+    @MainActor private func evaluateJavaScript() async {
+        do {
+            let result = try await webView.evaluateJavaScript(script)
+            shouldEvaluate = false
+            if let result = result as? String {
+                finishEvaluateSubject.send((result, nil))
+                delegate?.webView(webView, didFinishEvaluateJavaScript: result)
+            } else {
+                let error = NSError(domain: "WKWebView", code: -1, userInfo: [NSLocalizedDescriptionKey: "Can't convert to String.\nIf you are returning a JSON from JavaScript, please use JSON.stringify() before data return to Swift."])
                 finishEvaluateSubject.send((nil, error))
                 delegate?.webView(webView, didFailEvaluateJavaScript: error)
             }
+        } catch {
+            print(error)
+            finishEvaluateSubject.send((nil, error))
+            delegate?.webView(webView, didFailEvaluateJavaScript: error)
         }
     }
     
