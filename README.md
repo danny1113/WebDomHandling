@@ -65,7 +65,7 @@ class ExampleWebObject: WDWebObject, WDWebObjectDelegate {
         // handle result...
     }
     
-    func webView(_ webView: WKWebView, didFailEvaluateJavaScript error: String) {
+    func webView(_ webView: WKWebView, didFailEvaluateJavaScript error: Error) {
         // handle error...
     }
 }
@@ -76,6 +76,6 @@ class ExampleWebObject: WDWebObject, WDWebObjectDelegate {
 `WDWebObjectDelegate` is a protocol for handling result and error return from the WKWebView’s JavaScript environment. And it has 2 functions:
 
 - `func webView(_ webView: WKWebView, didFinishEvaluateJavaScript result: String)` for handling result return from `WKWebView`.
-- `func webView(_ webView: WKWebView, didFailEvaluateJavaScript error: String)` for handling error return from `WKWebView`.
+- `func webView(_ webView: WKWebView, didFailEvaluateJavaScript error: Error)` for handling error return from `WKWebView`.
 
 > **Note:** For example of delegate implementation, check [Example.swift](Sources/WebDomHandling/Example.swift), this example shows how to implement delegation in SwiftUI.
