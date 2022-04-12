@@ -35,7 +35,7 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     private var shouldEvaluate = false
     
     /// decoder for decode JSON object.
-    let decoder = JSONDecoder()
+    public let decoder = JSONDecoder()
     
     private lazy var finishEvaluateSubject = PassthroughSubject<(String?, Error?), Never>()
     

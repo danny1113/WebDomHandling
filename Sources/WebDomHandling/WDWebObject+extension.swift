@@ -10,13 +10,13 @@ import WebKit
 
 extension WDWebObject {
     
-    enum DecodeError: Error, LocalizedError {
+    public enum DecodeError: Error, LocalizedError {
         case CantConvertToData
         
         public var errorDescription: String? {
             switch self {
             case .CantConvertToData:
-                return NSLocalizedString("An error occured when convert String to Data.", comment: "Can't convert to data.")
+                return NSLocalizedString("An error occured when convert String to Data.", comment: "Can't convert String to Data.")
             }
         }
     }
@@ -26,11 +26,9 @@ extension WDWebObject {
     ///     - type: The type of the value to decode from the supplied JSON object.
     ///     - from: The JSON object to decode.
     /// - Returns: A value of the specified type, if the decoder can parse the data.
+    @inlinable
     public func decode<T: Decodable>(_ type: T.Type = T.self, from data: Data) throws -> T {
-        
-        let result = try self.decoder.decode(T.self, from: data)
-        
-        return result
+        return try self.decoder.decode(T.self, from: data)
     }
     
     /// Returns a value of the type you specify, decoded from a JSON object.
@@ -38,14 +36,13 @@ extension WDWebObject {
     ///     - type: The type of the value to decode from the supplied JSON object.
     ///     - jsonString: The JSON object to decode.
     /// - Returns: A value of the specified type, if the decoder can parse the data.
+    @inlinable
     public func decode<T: Decodable>(_ type: T.Type = T.self, jsonString: String) throws -> T {
         guard let data = jsonString.data(using: .utf8) else {
             throw DecodeError.CantConvertToData
         }
         
-        let result = try self.decoder.decode(T.self, from: data)
-        
-        return result
+        return try self.decoder.decode(T.self, from: data)
     }
     
     /// Remove cache from HTTPCookieStorage, URLCache, WKWebsiteDataStore
