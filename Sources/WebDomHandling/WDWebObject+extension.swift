@@ -10,13 +10,16 @@ import WebKit
 
 extension WDWebObject {
     
-    public enum DecodeError: Error, LocalizedError {
-        case CantConvertToData
+    public enum WebDomError: Error, LocalizedError {
+        case cantConvertToData
+        case cantConvertToString
         
         public var errorDescription: String? {
             switch self {
-            case .CantConvertToData:
+            case .cantConvertToData:
                 return NSLocalizedString("An error occured when convert String to Data.", comment: "Can't convert String to Data.")
+            case .cantConvertToString:
+                return NSLocalizedString("Can't convert JavaScript evaluate result to String.\nIf you are returning a JSON from JavaScript, please use JSON.stringify() before data return to Swift.", comment: "Can't convert JavaScript evaluate result to String.")
             }
         }
     }
@@ -39,7 +42,7 @@ extension WDWebObject {
     @inlinable
     public func decode<T: Decodable>(_ type: T.Type = T.self, jsonString: String) throws -> T {
         guard let data = jsonString.data(using: .utf8) else {
-            throw DecodeError.CantConvertToData
+            throw WebDomError.cantConvertToData
         }
         
         return try self.decoder.decode(T.self, from: data)

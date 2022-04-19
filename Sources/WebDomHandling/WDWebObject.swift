@@ -9,7 +9,6 @@ import WebKit
 import Combine
 
 
-
 /// The parent object which defines the fundemental elements when handling codes between between JavaScript and Swift.
 ///
 /// - Note: You have to set its delegate.
@@ -198,7 +197,8 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
         }
     }
     
-    @MainActor private func evaluateJavaScript() async {
+    @MainActor
+    private func evaluateJavaScript() async {
         do {
             let result = try await webView.evaluateJavaScript(script)
             shouldEvaluate = false
@@ -206,7 +206,7 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
                 finishEvaluateSubject.send((result, nil))
                 delegate?.webView(webView, didFinishEvaluateJavaScript: result)
             } else {
-                let error = NSError(domain: "WKWebView", code: -1, userInfo: [NSLocalizedDescriptionKey: "Can't convert to String.\nIf you are returning a JSON from JavaScript, please use JSON.stringify() before data return to Swift."])
+                let error = WebDomError.cantConvertToString
                 finishEvaluateSubject.send((nil, error))
                 delegate?.webView(webView, didFailEvaluateJavaScript: error)
             }
