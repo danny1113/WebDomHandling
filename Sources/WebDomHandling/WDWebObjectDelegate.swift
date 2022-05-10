@@ -8,6 +8,27 @@
 import WebKit
 
 
+/**
+ The delegate protocol to receive the result evaluate by `WKWebView`.
+ 
+ Here is a sample code of how to adopt this delegate in your project.
+ 
+ ```swift
+ func webView(_ webView: WKWebView, didFinishEvaluateJavaScript result: String) {
+     // decode JSON data...
+     do {
+         let data: [String] = try webObject.decode(jsonString: result)
+         // ...
+     } catch {
+         print(error)
+     }
+ }
+ 
+ func webView(_ webView: WKWebView, didFailEvaluateJavaScript error: Error) {
+     print(error)
+ }
+ ```
+ */
 public protocol WDWebObjectDelegate {
     /// Gets called when `func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!)` is called.
     /// - Parameter evaluateJavaScript: the string value return value from JavaScript

@@ -48,7 +48,7 @@ extension WDWebObject {
         return try self.decoder.decode(T.self, from: data)
     }
     
-    /// Remove cache from HTTPCookieStorage, URLCache, WKWebsiteDataStore
+    /// Remove cache from `HTTPCookieStorage`, `URLCache` and `WKWebsiteDataStore`.
     public func removeCache() {
         /// old API cookies
         for cookie in HTTPCookieStorage.shared.cookies ?? [] {
@@ -71,5 +71,5 @@ extension WDWebObject {
 // MARK: -
 
 extension WDWebObject {
-    static public let GetHTMLString = "function main() { return document.documentElement.outerHTML } main();"
+    static public let getHTMLString = "function main() { return document.documentElement.outerHTML } main();"
 }
