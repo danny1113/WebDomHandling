@@ -277,10 +277,12 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     
     @MainActor
     public func evaluate(beforeRequest: String, afterResponse: String) async throws -> String {
-        try await webView.evaluateJavaScript(script)
+        try await webView.evaluateJavaScript(beforeRequest)
+        
         
         return try await withCheckedThrowingContinuation { [weak self] continuation in
             guard let self = self else { return }
+            self.script = afterResponse
             self.continuation = continuation
         }
     }
