@@ -37,6 +37,8 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     /// decoder for decode JSON object.
     public let decoder = JSONDecoder()
     
+    private var continuation: CheckedContinuation<String, Error>?
+    
     private lazy var finishEvaluateSubject = PassthroughSubject<(String?, Error?), Never>()
     
     /// Publish result or error when webView finished evaluate JavaScript.
@@ -193,12 +195,75 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
             return
         }
         
-        Task {
-            await evaluateJavaScript()
+        Task { @MainActor in
+            if let continuation = continuation {
+                do {
+                    let result = try await webView.evaluateJavaScript(script)
+                    guard let string = result as? String else {
+                        throw WDError.cantConvertToURL
+                    }
+                    continuation.resume(returning: string)
+                } catch {
+                    print(error)
+                    continuation.resume(throwing: error)
+                }
+                self.continuation = nil
+            } else {
+                await evaluateJavaScript()
+            }
         }
     }
     
-    @MainActor private func evaluateJavaScript() async {
+    @MainActor
+    public func loadAndEvaluate(_ urlString: String, _ allHTTPHeaderFields: [String: String]? = nil, javaScript: String? = nil) async throws -> String {
+        
+        guard let url = URL(string: urlString) else {
+            throw WDError.cantConvertToURL
+        }
+        
+        if let script = javaScript {
+            self.script = script
+        }
+        
+        var request = URLRequest(url: url)
+        if let headers = allHTTPHeaderFields {
+            request.allHTTPHeaderFields = headers
+        }
+        
+        webView.load(request)
+        
+        return try await withCheckedThrowingContinuation { [weak self] continuation in
+            guard let self = self else { return }
+            self.continuation = continuation
+        }
+    }
+    
+    @MainActor
+    public func loadHTMLStringAndEvaluate(_ string: String, baseURL: URL? = nil, javaScript: String? = nil) async throws -> String {
+        webView.loadHTMLString(string, baseURL: baseURL)
+        
+        if let script = javaScript {
+            self.script = script
+        }
+        
+        return try await withCheckedThrowingContinuation { [weak self] continuation in
+            guard let self = self else { return }
+            self.continuation = continuation
+        }
+    }
+    
+    @MainActor
+    public func evaluate(beforeRequest: String, afterResponse: String) async throws -> String {
+        try await webView.evaluateJavaScript(script)
+        
+        return try await withCheckedThrowingContinuation { [weak self] continuation in
+            guard let self = self else { return }
+            self.continuation = continuation
+        }
+    }
+    
+    @MainActor
+    private func evaluateJavaScript() async {
         do {
             let result = try await webView.evaluateJavaScript(script)
             shouldEvaluate = false
@@ -206,7 +271,7 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
                 finishEvaluateSubject.send((result, nil))
                 delegate?.webView(webView, didFinishEvaluateJavaScript: result)
             } else {
-                let error = NSError(domain: "WKWebView", code: -1, userInfo: [NSLocalizedDescriptionKey: "Can't convert to String.\nIf you are returning a JSON from JavaScript, please use JSON.stringify() before data return to Swift."])
+                let error = WDError.cantConvertResultToString
                 finishEvaluateSubject.send((nil, error))
                 delegate?.webView(webView, didFailEvaluateJavaScript: error)
             }

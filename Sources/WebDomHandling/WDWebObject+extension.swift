@@ -10,11 +10,18 @@ import WebKit
 
 extension WDWebObject {
     
-    public enum DecodeError: Error, LocalizedError {
+    public enum WDError: Error, LocalizedError {
+        
+        case cantConvertToURL
+        case cantConvertResultToString
         case CantConvertToData
         
         public var errorDescription: String? {
             switch self {
+            case .cantConvertToURL:
+                return NSLocalizedString("Can't convert String to URL.", comment: "Can't convert String to URL.")
+            case .cantConvertResultToString:
+                return NSLocalizedString("Can't convert to String.\nIf you are returning a JSON from JavaScript, please use JSON.stringify() before data return to Swift.", comment: "Can't convert to String.\nIf you are returning a JSON from JavaScript, please use JSON.stringify() before data return to Swift.")
             case .CantConvertToData:
                 return NSLocalizedString("An error occured when convert String to Data.", comment: "Can't convert String to Data.")
             }
@@ -39,13 +46,14 @@ extension WDWebObject {
     @inlinable
     public func decode<T: Decodable>(_ type: T.Type = T.self, jsonString: String) throws -> T {
         guard let data = jsonString.data(using: .utf8) else {
-            throw DecodeError.CantConvertToData
+            throw WDError.CantConvertToData
         }
         
         return try self.decoder.decode(T.self, from: data)
     }
     
     /// Remove cache from HTTPCookieStorage, URLCache, WKWebsiteDataStore
+    @MainActor
     public func removeCache() {
         /// old API cookies
         for cookie in HTTPCookieStorage.shared.cookies ?? [] {
