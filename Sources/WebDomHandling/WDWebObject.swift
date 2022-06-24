@@ -9,14 +9,10 @@ import WebKit
 import Combine
 
 
-
 /// The parent object which defines the fundemental elements when handling codes between between JavaScript and Swift.
 ///
-/// - Note: You have to set its delegate.
-///
-/// This object will setup the `webView` and set its `navigaitonDelegate` by default.
-///
-/// You can inherit this class and call ``loadJavaScriptString(forResource:)`` to load JavaScript code from Bundle.
+/// This object will setup the ``webView-swift.property`` and set its `navigaitonDelegate` when init.
+/// > Tip: You can either use ``WDWebObjectDelegate`` or ``finishEvaluatePublisher`` to receive the result evaluated by `WKWebView`.
 open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     
     /// Environment for JavaScript code to run in.
@@ -25,16 +21,21 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     /// Variable stores the JavaScript source code.
     public var script: String = ""
     
-    /// delegate for handling JavaScript evaluate result or error.
+    /// Delegate for handling JavaScript evaluate result or error.
+    ///
+    /// > Tip: If you choose to use ``finishEvaluatePublisher`` to receive the result, you **don't** have to set the delegate.
     public var delegate: WDWebObjectDelegate?
     
+    /// The bundle to load the JavaScript source file.
+    ///
+    /// > Note: If you don't explicitly set the bundle, it will be the **main** bundle.
     public var bundle: Bundle!
     
     /// When webView did finish navigation but no JavaScript code provided, this tag will be set to `true`.
     /// When JavaScript code loaded, webView will evaluate the code.
     private var shouldEvaluate = false
     
-    /// decoder for decode JSON object.
+    /// Decoder for decode JSON object.
     public let decoder = JSONDecoder()
     
     private var continuation: CheckedContinuation<String, Error>?
@@ -42,6 +43,19 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     private lazy var finishEvaluateSubject = PassthroughSubject<(String?, Error?), Never>()
     
     /// Publish result or error when webView finished evaluate JavaScript.
+    ///
+    /// - If webView evaluated JavaScript successfully, the error will be `nil`.
+    /// - If webView failed to evaluate JavaScript, the result will be `nil`.
+    ///
+    /// Here is a sample code of how to adopt this in your project.
+    ///
+    /// ```swift
+    /// var webObject = WDWebObject()
+    /// cancellable = webObject.finishEvaluatePublisher
+    ///   .sink { (result: String?, error: Error?) in
+    ///        // ...
+    ///    }
+    /// ```
     public lazy var finishEvaluatePublisher = finishEvaluateSubject.eraseToAnyPublisher()
     
     /// Setup the webView.
@@ -122,7 +136,7 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     }
     
     
-    /// Load JavaScript code referenced by the specified URL.
+    /// Load JavaScript code referenced by the specified remote URL by `URLSession`.
     /// - Parameter url: URL.
     public func loadJavaScriptString(url: URL) {
         URLSession.shared.dataTask(with: url) { data, _, _ in
@@ -185,9 +199,18 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     
     /// When webView finished navigation and the JavaScript code isn't empty, webView will evaluate the JavaScript code.
     ///
-    /// After webView evaluated the JavaScript code,
+    /// After webView evaluated the JavaScript code and you've set the delegate,
     /// - If `error` is `nil`, and `result` can be typecast as `String`, the delegate function ``WDWebObjectDelegate/webView(_:didFinishEvaluateJavaScript:)`` will be called.
     /// - If `error` is not `nil`, the delegate function ``WDWebObjectDelegate/webView(_:didFailEvaluateJavaScript:)`` will be called.
+    ///
+    /// If you choose to use ``finishEvaluatePublisher`` to receive the result, just subscribe to the publisher:
+    /// ```swift
+    /// var webObject = WDWebObject()
+    /// cancellable = webObject.finishEvaluatePublisher
+    ///   .sink { (result: String?, error: Error?) in
+    ///        // ...
+    ///    }
+    /// ```
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         
         guard !script.isEmpty else {

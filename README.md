@@ -1,8 +1,12 @@
 
 # WebDomHandling
 
-WebDomHandling is a Swift Package for handling JavaScript code between WebKit and Swift implemented by WebKit.
+A Swift Package for handling JavaScript code between WebKit and Swift implemented by WebKit.
 
+This package uses these dependencies below:
+- Foundation
+- WebKit
+- Combine
 
 # Quick Start
 
@@ -34,7 +38,7 @@ You can use `finishEvaluatePublisher` or use [`WDWebObjectDelegate`](#WDWebObjec
 
 ```swift
 cancellable = service.finishEvaluatePublisher
-    .sink { (result, error) in
+    .sink { (result: String?, error: Error?) in
         if let error = error {
             print(error)
             return

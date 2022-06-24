@@ -14,7 +14,7 @@ extension WDWebObject {
         
         case cantConvertToURL
         case cantConvertResultToString
-        case CantConvertToData
+        case cantConvertToData
         
         public var errorDescription: String? {
             switch self {
@@ -22,7 +22,7 @@ extension WDWebObject {
                 return NSLocalizedString("Can't convert String to URL.", comment: "Can't convert String to URL.")
             case .cantConvertResultToString:
                 return NSLocalizedString("Can't convert to String.\nIf you are returning a JSON from JavaScript, please use JSON.stringify() before data return to Swift.", comment: "Can't convert to String.\nIf you are returning a JSON from JavaScript, please use JSON.stringify() before data return to Swift.")
-            case .CantConvertToData:
+            case .cantConvertToData:
                 return NSLocalizedString("An error occured when convert String to Data.", comment: "Can't convert String to Data.")
             }
         }
@@ -46,7 +46,7 @@ extension WDWebObject {
     @inlinable
     public func decode<T: Decodable>(_ type: T.Type = T.self, jsonString: String) throws -> T {
         guard let data = jsonString.data(using: .utf8) else {
-            throw WDError.CantConvertToData
+            throw WDError.cantConvertToData
         }
         
         return try self.decoder.decode(T.self, from: data)
