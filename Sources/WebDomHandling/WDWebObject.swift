@@ -226,15 +226,20 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
                         throw WDError.cantConvertToURL
                     }
                     continuation.resume(returning: string)
+                    self.continuation = nil
                 } catch {
                     print(error)
                     continuation.resume(throwing: error)
+                    self.continuation = nil
                 }
-                self.continuation = nil
             } else {
                 await evaluateJavaScript()
             }
         }
+    }
+    
+    public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        continuation?.resume(throwing: error)
     }
     
     @MainActor
