@@ -50,6 +50,13 @@ final class WebDomHandlingTests: XCTestCase {
         XCTAssertEqual(result, "Hello, World")
     }
     
+    func testEvaluateAsync() async throws {
+        let result = try await service.loadHTMLStringAndEvaluate("<a id='link' href='https://www.google.com'></a>", javaScript: "function main() { return document.documentElement.outerHTML } main();")
+        print(result)
+        let google = try await service.evaluate(beforeRequest: "document.querySelector('#link').click();", afterResponse: "function main() { return document.documentElement.outerHTML } main();")
+        print(google)
+    }
+    
     func testWithReturnInvaildValue() throws {
         expectation = expectation(description: "testWithReturnInvaildValue")
         service.delegate = self

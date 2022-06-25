@@ -221,20 +221,26 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
         Task { @MainActor in
             if let continuation = continuation {
                 do {
+                    print(script)
                     let result = try await webView.evaluateJavaScript(script)
                     guard let string = result as? String else {
                         throw WDError.cantConvertToURL
                     }
                     continuation.resume(returning: string)
+                    self.continuation = nil
                 } catch {
                     print(error)
                     continuation.resume(throwing: error)
+                    self.continuation = nil
                 }
-                self.continuation = nil
             } else {
                 await evaluateJavaScript()
             }
         }
+    }
+    
+    public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        continuation?.resume(throwing: error)
     }
     
     @MainActor
@@ -292,15 +298,20 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     
     @MainActor
     public func evaluate(beforeRequest: String, afterResponse: String?) async throws -> String {
-        try await webView.evaluateJavaScript(beforeRequest)
-        
-        
         return try await withCheckedThrowingContinuation { [weak self] continuation in
             guard let self = self else { return }
-            if let afterResponse = afterResponse {
-                self.script = afterResponse
+            
+            self.webView.evaluateJavaScript(beforeRequest) { result, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else {
+                    if let afterResponse = afterResponse {
+                        self.script = afterResponse
+                    }
+                    self.continuation = continuation
+                }
             }
-            self.continuation = continuation
+            
         }
     }
     
