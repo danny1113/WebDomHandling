@@ -262,6 +262,21 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
     }
     
     @MainActor
+    public func loadAndEvaluate(_ request: URLRequest, javaScript: String? = nil) async throws -> String {
+        
+        webView.load(request)
+        
+        if let script = javaScript {
+            self.script = script
+        }
+        
+        return try await withCheckedThrowingContinuation { [weak self] continuation in
+            guard let self = self else { return }
+            self.continuation = continuation
+        }
+    }
+    
+    @MainActor
     public func loadHTMLStringAndEvaluate(_ string: String, baseURL: URL? = nil, javaScript: String? = nil) async throws -> String {
         webView.loadHTMLString(string, baseURL: baseURL)
         
