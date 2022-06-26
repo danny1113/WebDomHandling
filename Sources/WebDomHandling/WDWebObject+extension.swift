@@ -15,6 +15,7 @@ extension WDWebObject {
         case cantConvertToURL
         case cantConvertResultToString
         case cantConvertToData
+        case continuationFailedToResume
         
         public var errorDescription: String? {
             switch self {
@@ -24,6 +25,8 @@ extension WDWebObject {
                 return NSLocalizedString("Can't convert to String.\nIf you are returning a JSON from JavaScript, please use JSON.stringify() before data return to Swift.", comment: "Can't convert to String.\nIf you are returning a JSON from JavaScript, please use JSON.stringify() before data return to Swift.")
             case .cantConvertToData:
                 return NSLocalizedString("An error occured when convert String to Data.", comment: "Can't convert String to Data.")
+            case .continuationFailedToResume:
+                return NSLocalizedString("Last continuation failed to resume.", comment: "Last continuation failed to resume.")
             }
         }
     }

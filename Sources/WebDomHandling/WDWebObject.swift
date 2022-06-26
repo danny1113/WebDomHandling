@@ -220,6 +220,7 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
         
         Task { @MainActor in
             if let continuation = continuation {
+                defer { self.continuation = nil }
                 do {
                     print(script)
                     let result = try await webView.evaluateJavaScript(script)
@@ -227,11 +228,9 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
                         throw WDError.cantConvertToURL
                     }
                     continuation.resume(returning: string)
-                    self.continuation = nil
                 } catch {
                     print(error)
                     continuation.resume(throwing: error)
-                    self.continuation = nil
                 }
             } else {
                 await evaluateJavaScript()
@@ -261,6 +260,10 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
         
         webView.load(request)
         
+        if let continuation = continuation {
+            continuation.resume(throwing: WDError.continuationFailedToResume)
+        }
+        
         return try await withCheckedThrowingContinuation { [weak self] continuation in
             guard let self = self else { return }
             self.continuation = continuation
@@ -276,6 +279,10 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
             self.script = script
         }
         
+        if let continuation = continuation {
+            continuation.resume(throwing: WDError.continuationFailedToResume)
+        }
+        
         return try await withCheckedThrowingContinuation { [weak self] continuation in
             guard let self = self else { return }
             self.continuation = continuation
@@ -288,6 +295,10 @@ open class WDWebObject: NSObject, ObservableObject, WKNavigationDelegate {
         
         if let script = javaScript {
             self.script = script
+        }
+        
+        if let continuation = continuation {
+            continuation.resume(throwing: WDError.continuationFailedToResume)
         }
         
         return try await withCheckedThrowingContinuation { [weak self] continuation in
